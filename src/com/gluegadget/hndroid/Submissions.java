@@ -100,7 +100,7 @@ public class Submissions extends Activity {
 					Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse((String) item.getUrl()));
 					startActivity(viewIntent);
 				} else if (ListPreference.equalsIgnoreCase("view-comments")) {
-					Intent intent = new Intent(Submissions.this, Comments.class);
+					Intent intent = new Intent(Submissions.this, CommentsActivity.class);
 					intent.putExtra("url", item.getCommentsUrl());
 					intent.putExtra("title", item.getTitle());
 					startActivity(intent);
@@ -154,7 +154,7 @@ public class Submissions extends Activity {
     			MenuItem comments = menu.add(0, CONTEXT_COMMENTS, 0, R.string.menu_comments); 
     			comments.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
     				public boolean onMenuItemClick(MenuItem item) {
-    					Intent intent = new Intent(Submissions.this, Comments.class);
+    					Intent intent = new Intent(Submissions.this, CommentsActivity.class);
     					intent.putExtra("url", newsContexted.getCommentsUrl());
     					intent.putExtra("title", newsContexted.getTitle());
     					startActivity(intent);

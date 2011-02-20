@@ -36,7 +36,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class Comments extends Activity {
+public class CommentsActivity extends Activity {
 	
 	static final private int MENU_UPDATE = Menu.FIRST;
 	static final private int MENU_COMMENT = Menu.FIRST + 1;
@@ -77,7 +77,7 @@ public class Comments extends Activity {
     	extrasCommentsUrl = extras.getString("url");
     	TextView hnTopDesc = (TextView)this.findViewById(R.id.hnTopDesc);
     	hnTopDesc.setText(extras.getString("title"));
-    	dialog = ProgressDialog.show(Comments.this, "", "Loading. Please wait...", true);
+    	dialog = ProgressDialog.show(CommentsActivity.this, "", "Loading. Please wait...", true);
     	new Thread(new Runnable(){
     		public void run() {
     			refreshComments(extrasCommentsUrl);
@@ -96,7 +96,7 @@ public class Comments extends Activity {
     			aa.notifyDataSetChanged();
     			break;
     		case NOTIFY_COMMENT_ADDED:
-    			dialog = ProgressDialog.show(Comments.this, "", "Reloading. Please wait...", true);
+    			dialog = ProgressDialog.show(CommentsActivity.this, "", "Reloading. Please wait...", true);
     	    	new Thread(new Runnable(){
     	    		public void run() {
     	    			refreshComments(extrasCommentsUrl);
@@ -115,7 +115,7 @@ public class Comments extends Activity {
     	@Override
     	public void ready(final String text) {
     		try {
-    			dialog = ProgressDialog.show(Comments.this, "", "Trying to comment. Please wait...", true);
+    			dialog = ProgressDialog.show(CommentsActivity.this, "", "Trying to comment. Please wait...", true);
     			new Thread(new Runnable(){
     				public void run() {
     					try {
@@ -150,7 +150,7 @@ public class Comments extends Activity {
     	@Override
     	public void ready(final String text, final String replyUrl) {
     		try {
-    			dialog = ProgressDialog.show(Comments.this, "", "Trying to reply. Please wait...", true);
+    			dialog = ProgressDialog.show(CommentsActivity.this, "", "Trying to reply. Please wait...", true);
     			new Thread(new Runnable(){
     				public void run() {
     					try {
@@ -201,7 +201,7 @@ public class Comments extends Activity {
     	itemRefresh.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			try {
-    				dialog = ProgressDialog.show(Comments.this, "", "Reloading. Please wait...", true);
+    				dialog = ProgressDialog.show(CommentsActivity.this, "", "Reloading. Please wait...", true);
     				new Thread(new Runnable(){
     					public void run() {
     						refreshComments(extrasCommentsUrl);
@@ -221,7 +221,7 @@ public class Comments extends Activity {
     	itemComment.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		@Override
     		public boolean onMenuItemClick(MenuItem item) {
-    			CommentDialog commentDialog = new CommentDialog(Comments.this, "Comment on submission", new OnCommentListener());
+    			CommentDialog commentDialog = new CommentDialog(CommentsActivity.this, "Comment on submission", new OnCommentListener());
     			commentDialog.show();
 
     			return true;
@@ -253,7 +253,7 @@ public class Comments extends Activity {
     		originalLink.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
     			public boolean onMenuItemClick(MenuItem item) {
     				CommentDialog commentDialog = new CommentDialog(
-    						Comments.this, "Reply to " + newsContexted.getAuthor(),
+    						CommentsActivity.this, "Reply to " + newsContexted.getAuthor(),
     						newsContexted.getReplyToUrl(), new OnReplyListener()
     				);
     				commentDialog.show();
@@ -267,7 +267,7 @@ public class Comments extends Activity {
     		MenuItem upVote = menu.add(0, CONTEXT_UPVOTE, 0, R.string.context_upvote);
         	upVote.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
         		public boolean onMenuItemClick(MenuItem item) {
-        			dialog = ProgressDialog.show(Comments.this, "", "Voting. Please wait...", true);
+        			dialog = ProgressDialog.show(CommentsActivity.this, "", "Voting. Please wait...", true);
 			    	new Thread(new Runnable(){
 			    		public void run() {
 			    			SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);

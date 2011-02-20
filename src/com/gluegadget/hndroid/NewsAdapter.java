@@ -59,7 +59,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
 			@Override
 			public void onClick(View v) {
 				String[] tag = (String[]) v.getTag();
-				Intent intent = new Intent(context, Comments.class);
+				Intent intent = new Intent(context, CommentsActivity.class);
 				intent.putExtra("title", tag[0]);
 				intent.putExtra("url", tag[1]);
 				context.startActivity(intent);
