@@ -65,7 +65,7 @@ public class Comments extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.comments);
         
         newsListView = (ListView)this.findViewById(R.id.hnListView);
         registerForContextMenu(newsListView);
