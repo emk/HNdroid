@@ -22,7 +22,6 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -46,7 +45,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class Main extends Activity {
+public class Main extends NewsActivity {
 	static final String PREFS_NAME = "user";
 	
 	static final private int MENU_UPDATE = Menu.FIRST;
