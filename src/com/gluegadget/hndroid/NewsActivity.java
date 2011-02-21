@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -22,16 +23,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 abstract class NewsActivity extends Activity {
 
 	protected static final String PREFS_NAME = "user";
 	protected static final int NOTIFY_DATASET_CHANGED = 1;
+	private static final int CONTEXT_USER_SUBMISSIONS = 2;
+	private static final int CONTEXT_COMMENTS = 3;
+	private static final int CONTEXT_USER_LINK = 4;
+	private static final int CONTEXT_USER_UPVOTE = 5;
+	private static final int CONTEXT_GOOGLE_MOBILE = 6;
 	protected Handler handler;
 	protected String newsUrl;
 	protected String loginUrl = "";
@@ -246,5 +257,91 @@ abstract class NewsActivity extends Activity {
 
 	protected String findAuthorValue(TagNode author) {
 		return author.getChildren().iterator().next().toString().trim();
+	}
+
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		
+		final AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
+		if (info.position < 30) {
+			final News newsContexted = (News) newsListView.getAdapter().getItem(info.position);
+	
+			menu.setHeaderTitle(newsContexted.getTitle());
+	
+			MenuItem originalLink = menu.add(0, CONTEXT_USER_LINK, 0, newsContexted.getUrl()); 
+			originalLink.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
+				public boolean onMenuItemClick(MenuItem item) {
+					Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse((String) item.getTitle()));
+					startActivity(viewIntent);
+					return true;
+				}
+			});
+	
+			MenuItem googleMobileLink = menu.add(0, CONTEXT_GOOGLE_MOBILE, 0, R.string.context_google_mobile);
+			googleMobileLink.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
+				public boolean onMenuItemClick(MenuItem item) {
+					Intent viewIntent = new Intent("android.intent.action.VIEW",
+							Uri.parse((String) "http://www.google.com/gwt/x?u=" + newsContexted.getUrl()));
+					startActivity(viewIntent);
+					return true;
+				}
+			});
+	
+			if (newsContexted.getCommentsUrl() != "") {
+				MenuItem comments = menu.add(0, CONTEXT_COMMENTS, 0, R.string.menu_comments); 
+				comments.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
+					public boolean onMenuItemClick(MenuItem item) {
+						viewComments(info.position, newsContexted);
+						return true;
+					}
+				});
+			}
+	
+			maybeAddUserSubmissionsToMenu(menu, newsContexted);
+	
+			if (loginUrl.contains("submit") && newsContexted.getUpVoteUrl() != "") {
+				MenuItem upVote = menu.add(0, CONTEXT_USER_UPVOTE, 0, R.string.context_upvote);
+				upVote.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
+					public boolean onMenuItemClick(MenuItem item) {
+						dialog = ProgressDialog.show(NewsActivity.this, "", "Voting. Please wait...", true);
+						new Thread(new Runnable(){
+							public void run() {
+								SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+								String cookie = settings.getString("cookie", "");
+								DefaultHttpClient httpclient = new DefaultHttpClient();
+								HttpGet httpget = new HttpGet(newsContexted.getUpVoteUrl());
+								httpget.addHeader("Cookie", "user=" + cookie);
+								ResponseHandler<String> responseHandler = new BasicResponseHandler();
+								try {
+									httpclient.execute(httpget, responseHandler);
+								} catch (ClientProtocolException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								dialog.dismiss();
+								handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+							}
+						}).start();
+						return true;
+					}
+				});
+			}
+		}
+	}
+
+	private void maybeAddUserSubmissionsToMenu(ContextMenu menu, final News newsContexted) {
+		MenuItem userSubmissions = menu.add(0, CONTEXT_USER_SUBMISSIONS, 0, newsContexted.getAuthor() + " submissions");
+		userSubmissions.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
+			public boolean onMenuItemClick(MenuItem item) {
+				Intent intent = new Intent(NewsActivity.this, Submissions.class);
+				intent.putExtra("user", newsContexted.getAuthor());
+				intent.putExtra("title", newsContexted.getAuthor() + " submissions");
+				startActivity(intent);
+				return true;
+			}
+		});
 	}
 }
