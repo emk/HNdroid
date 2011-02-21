@@ -71,6 +71,8 @@ public class Main extends NewsActivity {
 	
 	static int DEFAULT_ACTION_PREFERENCES = 0;
 	
+	Handler handler;
+
 	// TODO: We probably want to move this into savedInstanceState.
 	String newsUrl;
 	
@@ -92,6 +94,7 @@ public class Main extends NewsActivity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.main);
 
+    	handler = new MainHandler();
     	newsUrl = getString(R.string.hnfeed);
 
     	newsListView = (ListView)this.findViewById(R.id.hnListView);
@@ -118,34 +121,6 @@ public class Main extends NewsActivity {
     		}
     	}).start();
     }
-
-    Handler handler = new Handler(){
-    	@Override
-    	public void handleMessage(Message msg) {
-    		switch(msg.what){
-    		case NOTIFY_DATASET_CHANGED:
-    			aa.notifyDataSetChanged();
-    			newsListView.setSelection(0);
-    			break;
-    		case LOGIN_FAILED:
-    			Toast.makeText(Main.this, "Login failed :(", Toast.LENGTH_LONG).show();
-    			break;
-    		case LOGIN_SUCCESSFULL:
-    			Toast.makeText(Main.this, "Successful login :)", Toast.LENGTH_LONG).show();
-    			dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
-    	    	new Thread(new Runnable(){
-    	    		public void run() {
-    	    			refreshNews();
-    	    			dialog.dismiss();
-    	    			handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-    	    		}
-    	    	}).start();
-    			break;
-    		default:
-    			break;
-    		}
-    	}
-    };
     
     OnItemClickListener clickListener = new OnItemClickListener() {
 		@Override
@@ -203,6 +178,44 @@ public class Main extends NewsActivity {
 				ft.replace(R.id.hnCommentsFrame, fragment);
 				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.commit();
+			}
+		}
+	}
+
+	private class NewsActivityHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+			case NOTIFY_DATASET_CHANGED:
+				aa.notifyDataSetChanged();
+				newsListView.setSelection(0);
+				break;
+			default:
+				super.handleMessage(msg);
+			}
+		}
+	}
+
+	private final class MainHandler extends NewsActivityHandler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case LOGIN_FAILED:
+				Toast.makeText(Main.this, "Login failed :(", Toast.LENGTH_LONG).show();
+				break;
+			case LOGIN_SUCCESSFULL:
+				Toast.makeText(Main.this, "Successful login :)", Toast.LENGTH_LONG).show();
+				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
+				new Thread(new Runnable(){
+					public void run() {
+						refreshNews();
+						dialog.dismiss();
+						handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+					}
+				}).start();
+				break;
+			default:
+				super.handleMessage(msg);
 			}
 		}
 	}
