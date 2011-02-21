@@ -72,6 +72,9 @@ public class Main extends Activity {
 	
 	static int DEFAULT_ACTION_PREFERENCES = 0;
 	
+	// TODO: We probably want to move this into savedInstanceState.
+	String newsUrl;
+	
 	String loginUrl = "";
 	
 	ProgressDialog dialog;
@@ -89,6 +92,8 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.main);
+
+    	newsUrl = getString(R.string.hnfeed);
 
     	newsListView = (ListView)this.findViewById(R.id.hnListView);
     	registerForContextMenu(newsListView);
@@ -153,7 +158,8 @@ public class Main extends Activity {
 				dialog = ProgressDialog.show(Main.this, "", "Loading. Please wait...", true);
     	    	new Thread(new Runnable(){
     	    		public void run() {
-    	    			refreshNews(item.getUrl());
+    	    			newsUrl = item.getUrl();
+    	    			refreshNews();
     	    			dialog.dismiss();
     	    			handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
     	    		}
@@ -371,7 +377,8 @@ public class Main extends Activity {
 				new Thread(new Runnable(){
 					public void run() {
 						String hnFeed = getString(R.string.hnfeed);
-						refreshNews(hnFeed + item.toString());
+						newsUrl = hnFeed + item.toString();
+						refreshNews();
 						dialog.dismiss();
 						handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
 					}
@@ -466,11 +473,6 @@ public class Main extends Activity {
     }
     
     private void refreshNews() {
-    	String hnFeed = getString(R.string.hnfeed);
-    	refreshNews(hnFeed);
-    }
-    
-    private void refreshNews(String newsUrl) {
     	try {
     		news.clear();
     		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
