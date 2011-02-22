@@ -142,7 +142,7 @@ abstract class NewsActivity extends Activity {
 		}
 	}
 
-	protected void viewComments(int pos, final News item) {
+	void viewComments(int pos, final News item) {
 		String commentsUrl = item.getCommentsUrl();
 		String title = item.getTitle();
 		if (commentsFrame == null) {

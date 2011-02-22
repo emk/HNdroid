@@ -14,11 +14,11 @@ import android.widget.TextView;
 public class NewsAdapter extends ArrayAdapter<News> {
 	private LayoutInflater mInflater;
 	
-	Context context;
+	NewsActivity context;
 	
 	int resource;
 	
-	public NewsAdapter(Context _context, int _resource, List<News> _items) {
+	public NewsAdapter(NewsActivity _context, int _resource, List<News> _items) {
 		super(_context, _resource, _items);
 		mInflater = (LayoutInflater)_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		resource = _resource;
@@ -33,10 +33,10 @@ public class NewsAdapter extends ArrayAdapter<News> {
 	}
 	
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		
-		News item = getItem(position);
+		final News item = getItem(position);
 		
 		if (convertView == null) {
 			convertView = mInflater.inflate(resource, parent, false);
@@ -58,11 +58,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
 		holder.comment.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String[] tag = (String[]) v.getTag();
-				Intent intent = new Intent(context, CommentsActivity.class);
-				intent.putExtra("title", tag[0]);
-				intent.putExtra("url", tag[1]);
-				context.startActivity(intent);
+				context.viewComments(position, item);
 			}
 		});
 
