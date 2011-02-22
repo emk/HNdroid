@@ -13,7 +13,7 @@
 		<activity android:name=".CommentsActivity" android:label="@string/menu_comments"
 			android:configChanges="orientation">
 		</activity>
-		<activity android:name=".Submissions" android:label="@string/menu_submissions"></activity>
+		<activity android:name=".SubmissionsActivity" android:label="@string/menu_submissions"></activity>
 		<activity android:name=".KarmaWidgetConfigurationActivity">
 			<intent-filter>
 				<action android:name="android.apwidget.action.APPWIDGET_CONFIGURE"/>

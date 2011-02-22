@@ -336,7 +336,7 @@ abstract class NewsActivity extends Activity {
 		MenuItem userSubmissions = menu.add(0, CONTEXT_USER_SUBMISSIONS, 0, newsContexted.getAuthor() + " submissions");
 		userSubmissions.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
 			public boolean onMenuItemClick(MenuItem item) {
-				Intent intent = new Intent(NewsActivity.this, Submissions.class);
+				Intent intent = new Intent(NewsActivity.this, SubmissionsActivity.class);
 				intent.putExtra("user", newsContexted.getAuthor());
 				intent.putExtra("title", newsContexted.getAuthor() + " submissions");
 				startActivity(intent);

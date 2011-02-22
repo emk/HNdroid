@@ -6,7 +6,7 @@ import org.htmlcleaner.XPatherException;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class Submissions extends NewsActivity {
+public class SubmissionsActivity extends NewsActivity {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
