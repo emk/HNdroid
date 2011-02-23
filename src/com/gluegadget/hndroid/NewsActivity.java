@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -51,7 +50,7 @@ abstract class NewsActivity extends HNActivity {
 	protected ListView newsListView;
 	protected NewsAdapter aa;
 	protected ArrayList<News> news = new ArrayList<News>();
-	FrameLayout commentsFrame;
+	boolean haveDetailsFrame;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -69,9 +68,9 @@ abstract class NewsActivity extends HNActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		// Get rid of our comments fragment.
+		// Get rid of our details fragment.
 		// TODO: This works, but is it correct?
-		detachCommentsFragmentIfPresent();
+		detachDetailsFragmentIfPresent();
 		setContentView(R.layout.main);
 		hookUpViews();
 	}
@@ -83,8 +82,8 @@ abstract class NewsActivity extends HNActivity {
 		newsListView.setAdapter(aa);
 		newsListView.setOnItemClickListener(clickListener);
 		
-		commentsFrame = (FrameLayout) findViewById(R.id.hnCommentsFrame);
-		if (commentsFrame != null) {
+		haveDetailsFrame = (findViewById(R.id.hnDetailsFrame) != null);
+		if (haveDetailsFrame) {
 			newsListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			// TODO: Automatically reshow what we were last looking at
 			// when we're restored from a saved state?
@@ -93,8 +92,8 @@ abstract class NewsActivity extends HNActivity {
 		}
 	}
 
-	private void detachCommentsFragmentIfPresent() {
-		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnCommentsFrame);
+	private void detachDetailsFragmentIfPresent() {
+		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
 		if (fragment != null) {
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			ft.remove(fragment);
@@ -116,7 +115,7 @@ abstract class NewsActivity extends HNActivity {
 		public void handleMessage(Message msg) {
 			switch(msg.what){
 			case NOTIFY_DATASET_CHANGED:
-				NewsActivity.this.detachCommentsFragmentIfPresent();
+				NewsActivity.this.detachDetailsFragmentIfPresent();
 				aa.clearCheckedPosition();
 				aa.notifyDataSetChanged();
 				newsListView.setSelection(0);
@@ -158,7 +157,7 @@ abstract class NewsActivity extends HNActivity {
 	void viewComments(int pos, final News item) {
 		String commentsUrl = item.getCommentsUrl();
 		String title = item.getTitle();
-		if (commentsFrame == null) {
+		if (!haveDetailsFrame) {
 			// We don't have any place to put the comments on this screen,
 			// so display them in a new activity.
 			Intent intent = new Intent(NewsActivity.this, CommentsActivity.class);
@@ -169,12 +168,12 @@ abstract class NewsActivity extends HNActivity {
 			// We can display the comments inside of this activity.
 			aa.setCheckedPosition(pos);
 			aa.notifyDataSetChanged();
-			CommentsFragment fragment = (CommentsFragment)
-				getFragmentManager().findFragmentById(R.id.hnCommentsFrame);
-			if (fragment == null || fragment.getCommentsUrl() != commentsUrl) {
+			Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
+			if (fragment == null || !(fragment instanceof CommentsFragment)
+					|| ((CommentsFragment) fragment).getCommentsUrl() != commentsUrl) {
 				fragment = CommentsFragment.newInstance(commentsUrl);
 				FragmentTransaction ft = getFragmentManager().beginTransaction();
-				ft.replace(R.id.hnCommentsFrame, fragment);
+				ft.replace(R.id.hnDetailsFrame, fragment);
 				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 	            ft.commit();
 			}
