@@ -4,7 +4,6 @@ import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
 import android.app.ActionBar;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 
 public class SubmissionsActivity extends NewsActivity {
@@ -12,15 +11,7 @@ public class SubmissionsActivity extends NewsActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	
-		dialog = ProgressDialog.show(SubmissionsActivity.this, "", "Loading. Please wait...", true);
-		new Thread(new Runnable(){
-			public void run() {
-				refreshNews();
-				dialog.dismiss();
-				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-			}
-		}).start();    
+    	refreshNews();
     }
 
 	@Override

@@ -69,16 +69,9 @@ abstract class NewsActivity extends HNActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		
-		// If we have a comments frame, dump it now.
+		// Get rid of our comments fragment.
 		// TODO: This works, but is it correct?
-		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnCommentsFrame);
-		if (fragment != null) {
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
-			ft.remove(fragment);
-			ft.commit();
-		}
-
+		detachCommentsFragmentIfPresent();
 		setContentView(R.layout.main);
 		hookUpViews();
 	}
@@ -100,6 +93,15 @@ abstract class NewsActivity extends HNActivity {
 		}
 	}
 
+	private void detachCommentsFragmentIfPresent() {
+		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnCommentsFrame);
+		if (fragment != null) {
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.remove(fragment);
+			ft.commit();
+		}
+	}
+
 	protected abstract String getDefaultFeedUrl();
 
 	protected Handler createHandler() {
@@ -114,6 +116,8 @@ abstract class NewsActivity extends HNActivity {
 		public void handleMessage(Message msg) {
 			switch(msg.what){
 			case NOTIFY_DATASET_CHANGED:
+				NewsActivity.this.detachCommentsFragmentIfPresent();
+				aa.clearCheckedPosition();
 				aa.notifyDataSetChanged();
 				newsListView.setSelection(0);
 				break;
@@ -130,16 +134,8 @@ abstract class NewsActivity extends HNActivity {
 			if (pos < 30) {
 				onNewsItemClicked(pos, item);
 			} else {
-				dialog = ProgressDialog.show(NewsActivity.this, "", "Loading. Please wait...", true);
-		    	new Thread(new Runnable(){
-		    		public void run() {
-		    			newsUrl = item.getUrl();
-		    			refreshNews();
-		    			dialog.dismiss();
-		    			handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-		    		}
-	
-		    	}).start();
+    			newsUrl = item.getUrl();
+    			refreshNews();
 			}
 		}
 	};
@@ -186,9 +182,18 @@ abstract class NewsActivity extends HNActivity {
 	}
 
 	protected void refreshNews() {
+		dialog = ProgressDialog.show(this, "", "Loading news. Please wait...", true);
+		new Thread(new Runnable(){
+			public void run() {
+				downloadAndParseNews();
+				dialog.dismiss();
+				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+			}
+		}).start();
+	}
+	
+	protected void downloadAndParseNews() {
 		try {
-			if (aa != null)
-				aa.clearCheckedPosition();
 			news.clear();
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			String cookie = settings.getString("cookie", "");

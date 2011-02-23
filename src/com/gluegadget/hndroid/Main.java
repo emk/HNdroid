@@ -102,14 +102,7 @@ public class Main extends NewsActivity {
 				break;
 			case LOGIN_SUCCESSFULL:
 				Toast.makeText(Main.this, "Successful login :)", Toast.LENGTH_LONG).show();
-				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
-				new Thread(new Runnable(){
-					public void run() {
-						refreshNews();
-						dialog.dismiss();
-						handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-					}
-				}).start();
+				refreshNews();
 				break;
 			default:
 				super.handleMessage(msg);
@@ -183,14 +176,7 @@ public class Main extends NewsActivity {
     	menuItemRefresh.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			try {
-    				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
-    				new Thread(new Runnable(){
-    					public void run() {
-    						refreshNews();
-    						dialog.dismiss();
-    						handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-    					}
-    				}).start();
+    				refreshNews();
     			} catch (Exception e) {
     				e.printStackTrace();
     			}
@@ -203,18 +189,11 @@ public class Main extends NewsActivity {
     	menuItemLogout.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			try {
-    				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
-    				new Thread(new Runnable(){
-    					public void run() {
-    						SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-    						SharedPreferences.Editor editor = settings.edit();
-    						editor.remove("cookie");
-    						editor.commit();
-    						refreshNews();
-    						dialog.dismiss();
-    						handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-    					}
-    				}).start();
+					SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+					SharedPreferences.Editor editor = settings.edit();
+					editor.remove("cookie");
+					editor.commit();
+					refreshNews();
     			} catch (Exception e) {
     				e.printStackTrace();
     			}
@@ -267,16 +246,9 @@ public class Main extends NewsActivity {
     }
 
 	private void loadNewsForUrlFragment(final String urlFragment) {
-		dialog = ProgressDialog.show(Main.this, "", "Loading. Please wait...", true);
-		new Thread(new Runnable(){
-			public void run() {
-				String hnFeed = getDefaultFeedUrl();
-				newsUrl = hnFeed + urlFragment;
-				refreshNews();
-				dialog.dismiss();
-				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-			}
-		}).start();
+		String hnFeed = getDefaultFeedUrl();
+		newsUrl = hnFeed + urlFragment;
+		refreshNews();
 	}
 
 	/**
