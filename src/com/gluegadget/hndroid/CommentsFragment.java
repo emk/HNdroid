@@ -28,6 +28,8 @@ import android.os.Message;
 import android.text.Html;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +58,9 @@ public class CommentsFragment extends Fragment {
 	
 	Boolean loggedIn = false;
 
+	MenuItem menuItemRefresh;
+	MenuItem menuItemComment;
+	
 	public static CommentsFragment newInstance(String url) {
 		Bundle args = new Bundle();
 		args.putString("url", url);
@@ -67,6 +72,12 @@ public class CommentsFragment extends Fragment {
 
 	public String getCommentsUrl() {
 		return getArguments().getString("url");
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -214,6 +225,43 @@ public class CommentsFragment extends Fragment {
     	public void ready(final String text) {}
     }
 
+    @Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+	
+		menuItemRefresh = menu.add(R.string.menu_refresh_comments);
+		menuItemRefresh.setIcon(R.drawable.ic_menu_refresh);
+		menuItemRefresh.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				try {
+					doRefreshComments();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		});
+	
+		menuItemComment = menu.add(R.string.menu_comment);
+		menuItemComment.setIcon(R.drawable.ic_menu_compose);
+		menuItemComment.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		menuItemComment.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				doPostComment();
+				return true;
+			}
+		});
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		boolean canPost = canPostComment();
+		menuItemComment.setVisible(canPost);
+		menuItemComment.setEnabled(canPost);
+		super.onPrepareOptionsMenu(menu); 
+	}
+
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	
@@ -346,6 +394,15 @@ public class CommentsFragment extends Fragment {
     			Comment commentEntry = new Comment("No comments.");
     			commentsList.add(commentEntry);
     		}
+
+			// Update our options menu now that we've parsed the page.
+			// This is necessary to show the "Comment" icon in the
+			// action bar immediately.
+			getActivity().runOnUiThread(new Runnable() {
+				public void run() {
+					getActivity().invalidateOptionsMenu();
+				}
+			});
     	} catch (MalformedURLException e) {
     		e.printStackTrace();
     	} catch (IOException e) {

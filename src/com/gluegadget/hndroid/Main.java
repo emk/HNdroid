@@ -31,15 +31,15 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
 public class Main extends NewsActivity {
-	static final private int MENU_UPDATE = Menu.FIRST;
-	static final private int MENU_LOGIN = 2;
-	static final private int MENU_LOGOUT = 3;
-	static final private int MENU_PREFERENCES = 4;
-	
 	static final private int LOGIN_FAILED = 2;
 	static final private int LOGIN_SUCCESSFULL = 3;
 	
 	static int DEFAULT_ACTION_PREFERENCES = 0;
+
+	private MenuItem menuItemRefresh;
+	private MenuItem menuItemLogout;
+	private MenuItem menuItemLogin;
+	private MenuItem menuItemPreferences;
 	
 	@Override
 	protected Handler createHandler() {
@@ -178,9 +178,9 @@ public class Main extends NewsActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
     	super.onCreateOptionsMenu(menu);
 
-    	MenuItem itemRefresh = menu.add(0, MENU_UPDATE, Menu.NONE, R.string.menu_refresh);
-    	itemRefresh.setIcon(R.drawable.ic_menu_refresh);
-    	itemRefresh.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+    	menuItemRefresh = menu.add(R.string.menu_refresh);
+    	menuItemRefresh.setIcon(R.drawable.ic_menu_refresh);
+    	menuItemRefresh.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			try {
     				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
@@ -198,9 +198,9 @@ public class Main extends NewsActivity {
     		}
     	});
     	
-    	MenuItem itemLogout = menu.add(0, MENU_LOGOUT, Menu.NONE, R.string.menu_logout);
-    	itemLogout.setIcon(R.drawable.ic_menu_logout);
-    	itemLogout.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+    	menuItemLogout = menu.add(R.string.menu_logout);
+    	menuItemLogout.setIcon(R.drawable.ic_menu_logout);
+    	menuItemLogout.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			try {
     				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
@@ -222,9 +222,9 @@ public class Main extends NewsActivity {
     		}
     	});
 
-    	MenuItem itemLogin = menu.add(0, MENU_LOGIN, Menu.NONE, R.string.menu_login);
-    	itemLogin.setIcon(R.drawable.ic_menu_login);
-    	itemLogin.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+    	menuItemLogin = menu.add(R.string.menu_login);
+    	menuItemLogin.setIcon(R.drawable.ic_menu_login);
+    	menuItemLogin.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			LoginDialog loginDialog = new LoginDialog(Main.this, "", new OnLoginListener());
     			loginDialog.show();
@@ -233,9 +233,9 @@ public class Main extends NewsActivity {
     		}
     	});
     	
-    	MenuItem itemPreferences = menu.add(0, MENU_PREFERENCES, Menu.NONE, R.string.menu_preferences);
-    	itemPreferences.setIcon(R.drawable.ic_menu_preferences);
-    	itemPreferences.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+    	menuItemPreferences = menu.add(R.string.menu_preferences);
+    	menuItemPreferences.setIcon(R.drawable.ic_menu_preferences);
+    	menuItemPreferences.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				Intent intent = new Intent(Main.this, Preferences.class);
@@ -252,15 +252,15 @@ public class Main extends NewsActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
 
     	if (loginUrl.contains("submit")) {
-    		menu.findItem(MENU_LOGIN).setVisible(false);
-    		menu.findItem(MENU_LOGIN).setEnabled(false);
-    		menu.findItem(MENU_LOGOUT).setVisible(true);
-    		menu.findItem(MENU_LOGOUT).setEnabled(true);
+    		menuItemLogin.setVisible(false);
+    		menuItemLogin.setEnabled(false);
+    		menuItemLogout.setVisible(true);
+    		menuItemLogout.setEnabled(true);
     	} else {
-    		menu.findItem(MENU_LOGIN).setVisible(true);
-    		menu.findItem(MENU_LOGIN).setEnabled(true);
-    		menu.findItem(MENU_LOGOUT).setVisible(false);
-    		menu.findItem(MENU_LOGOUT).setEnabled(false);
+    		menuItemLogin.setVisible(true);
+    		menuItemLogin.setEnabled(true);
+    		menuItemLogout.setVisible(false);
+    		menuItemLogout.setEnabled(false);
     	}
     	
     	return super.onPrepareOptionsMenu(menu); 
