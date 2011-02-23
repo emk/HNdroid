@@ -141,7 +141,7 @@ abstract class NewsActivity extends HNActivity {
 
 	private void onNewsItemClicked(int pos, final News item) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		String ListPreference = prefs.getString("PREF_DEFAULT_ACTION", "view-comments");
+		String ListPreference = prefs.getString("PREF_DEFAULT_ACTION", "open-in-browser");
 		if (ListPreference.equalsIgnoreCase("open-in-browser")) {
 			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse((String) item.getUrl()));
 			startActivity(viewIntent);

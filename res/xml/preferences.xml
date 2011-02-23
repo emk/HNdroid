@@ -9,6 +9,6 @@
 		android:entries="@array/default_action_options"
 		android:entryValues="@array/default_action_values"
 		android:dialogTitle="Default action" 
-		android:defaultValue="view-comments" />
+		android:defaultValue="open-in-browser" />
 	
 </PreferenceScreen>
