@@ -2,6 +2,7 @@ package com.gluegadget.hndroid;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.view.MenuItem;
 
 public class Preferences extends PreferenceActivity {
 
@@ -10,5 +11,17 @@ public class Preferences extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 	}
-	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// This code is identical to HNActivity.  Normally, we'd
+		// just inherit from it, but we need to inherit from
+		// PreferenceActivity instead.
+		if (item.getItemId() == android.R.id.home) {
+			Main.returnToMain(this);
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+	}
 }

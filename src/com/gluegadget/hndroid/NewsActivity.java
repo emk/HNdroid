@@ -13,7 +13,6 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -35,7 +34,7 @@ import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-abstract class NewsActivity extends Activity {
+abstract class NewsActivity extends HNActivity {
 
 	protected static final String PREFS_NAME = "user";
 	protected static final int NOTIFY_DATASET_CHANGED = 1;
@@ -267,17 +266,6 @@ abstract class NewsActivity extends Activity {
 
 	protected String findAuthorValue(TagNode author) {
 		return author.getChildren().iterator().next().toString().trim();
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			Intent intent = new Intent(this, Main.class);
-			startActivity(intent);
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
-		}
 	}
 
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

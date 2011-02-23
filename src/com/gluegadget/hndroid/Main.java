@@ -20,6 +20,7 @@ import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.app.ActionBar.Tab;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -276,5 +277,16 @@ public class Main extends NewsActivity {
 				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
 			}
 		}).start();
+	}
+
+	/**
+	 * Return to the Home activity, clearing any of our other activities
+	 * from the current stack.
+	 * @param context The current activity.
+	 */
+	static void returnToMain(Context context) {
+		Intent intent = new Intent(context, Main.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(intent);
 	}
 }

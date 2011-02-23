@@ -1,13 +1,12 @@
 package com.gluegadget.hndroid;
 
-import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 
-public class CommentsActivity extends Activity {
+public class CommentsActivity extends HNActivity {
 	
 	static final private int MENU_UPDATE = Menu.FIRST;
 	static final private int MENU_COMMENT = Menu.FIRST + 1;
