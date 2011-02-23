@@ -3,6 +3,7 @@ package com.gluegadget.hndroid;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -31,6 +32,14 @@ public class SubmissionsActivity extends NewsActivity {
 	protected String getDefaultFeedUrl() {
     	final Bundle extras = getIntent().getExtras();
 		return "http://news.ycombinator.com/submitted?id=" + extras.getString("user");
+	}
+	
+	@Override
+	protected void configureActionBar() {
+		super.configureActionBar();
+		ActionBar bar = getActionBar();
+		Bundle extras = getIntent().getExtras();
+		bar.setTitle(extras.getString("title"));
 	}
 
 	@Override
