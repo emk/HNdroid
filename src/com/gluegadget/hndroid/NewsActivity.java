@@ -18,6 +18,7 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,19 +63,30 @@ abstract class NewsActivity extends Activity {
 		handler = createHandler();
 		newsUrl = getDefaultFeedUrl();
 	
+		hookUpViews();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		setContentView(R.layout.main);
+		hookUpViews();
+	}
+
+	private void hookUpViews() {
 		newsListView = (ListView)this.findViewById(R.id.hnListView);
 		registerForContextMenu(newsListView);
-		int layoutID = R.layout.news_list_item;
-		aa = new NewsAdapter(this, layoutID , news);
+		aa = new NewsAdapter(this, R.layout.news_list_item, news);
 		newsListView.setAdapter(aa);
 		newsListView.setOnItemClickListener(clickListener);
 		
 		commentsFrame = (FrameLayout) findViewById(R.id.hnCommentsFrame);
 		if (commentsFrame != null) {
 			newsListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-			// TODO: Automatically reshow what we were last looking at?
-	            // This will involve storing more information in our
-	            // application.
+			// TODO: Automatically reshow what we were last looking at
+			// when we're restored from a saved state?
+	        // This will involve storing more information in our
+	        // application.
 		}
 	}
 
