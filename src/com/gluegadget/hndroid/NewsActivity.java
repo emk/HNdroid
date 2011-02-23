@@ -13,6 +13,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -68,6 +69,16 @@ abstract class NewsActivity extends HNActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+		
+		// If we have a comments frame, dump it now.
+		// TODO: This works, but is it correct?
+		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnCommentsFrame);
+		if (fragment != null) {
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.remove(fragment);
+			ft.commit();
+		}
+
 		setContentView(R.layout.main);
 		hookUpViews();
 	}
