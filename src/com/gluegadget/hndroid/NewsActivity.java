@@ -161,7 +161,8 @@ abstract class NewsActivity extends Activity {
 			startActivity(intent);
 		} else {
 			// We can display the comments inside of this activity.
-			newsListView.setItemChecked(pos, true);			
+			aa.setCheckedPosition(pos);
+			aa.notifyDataSetChanged();
 			CommentsFragment fragment = (CommentsFragment)
 				getFragmentManager().findFragmentById(R.id.hnCommentsFrame);
 			if (fragment == null || fragment.getCommentsUrl() != commentsUrl) {
@@ -176,6 +177,8 @@ abstract class NewsActivity extends Activity {
 
 	protected void refreshNews() {
 		try {
+			if (aa != null)
+				aa.clearCheckedPosition();
 			news.clear();
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			String cookie = settings.getString("cookie", "");
