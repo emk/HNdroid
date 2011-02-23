@@ -6,7 +6,6 @@ import org.htmlcleaner.XPatherException;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.widget.TextView;
 
 public class SubmissionsActivity extends NewsActivity {
 	
@@ -14,10 +13,6 @@ public class SubmissionsActivity extends NewsActivity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
-    	final Bundle extras = getIntent().getExtras();
-    	TextView hnTopDesc = (TextView)this.findViewById(R.id.hnTopDesc);
-    	hnTopDesc.setText(extras.getString("title"));
-
 		dialog = ProgressDialog.show(SubmissionsActivity.this, "", "Loading. Please wait...", true);
 		new Thread(new Runnable(){
 			public void run() {

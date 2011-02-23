@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.widget.TextView;
 
 public class CommentsActivity extends Activity {
 	
@@ -23,8 +22,6 @@ public class CommentsActivity extends Activity {
                 
     	final Bundle extras = getIntent().getExtras();
     	final String extrasCommentsUrl = extras.getString("url");
-    	TextView hnTopDesc = (TextView)this.findViewById(R.id.hnTopDesc);
-    	hnTopDesc.setText(extras.getString("title"));
     	getActionBar().setTitle(extras.getString("title"));
 
     	if (savedInstanceState == null) {    		
