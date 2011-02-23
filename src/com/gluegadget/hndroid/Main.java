@@ -204,14 +204,6 @@ public class Main extends NewsActivity {
     		}
     	});
     	
-    	SubMenu subMenu = menu.addSubMenu(R.string.menu_lists);
-    	subMenu.add(LIST_MENU_GROUP, LIST_NEWS_ID, 0, "news");
-    	subMenu.add(LIST_MENU_GROUP, LIST_BEST_ID, 1, "best");
-    	subMenu.add(LIST_MENU_GROUP, LIST_ACTIVE_ID, 2, "active");
-    	subMenu.add(LIST_MENU_GROUP, LIST_NOOB_ID, 3, "noobstories");
-    	subMenu.setIcon(R.drawable.ic_menu_friendslist);
-    	subMenu.setGroupCheckable(LIST_MENU_GROUP, true, true);
-
     	MenuItem itemLogout = menu.add(0, MENU_LOGOUT, Menu.NONE, R.string.menu_logout);
     	itemLogout.setIcon(R.drawable.ic_menu_logout);
     	itemLogout.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -278,23 +270,6 @@ public class Main extends NewsActivity {
     	}
     	
     	return super.onPrepareOptionsMenu(menu); 
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-    	switch (item.getItemId()) {
-    	case LIST_ACTIVE_ID:
-    	case LIST_BEST_ID:
-    	case LIST_NOOB_ID:
-    	case LIST_NEWS_ID:
-    		try {
-				final String urlFragment = item.toString();
-				loadNewsForUrlFragment(urlFragment);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-    	}
-    	return true;
     }
 
 	private void loadNewsForUrlFragment(final String urlFragment) {
