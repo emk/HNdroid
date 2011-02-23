@@ -143,14 +143,33 @@ abstract class NewsActivity extends HNActivity {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		String ListPreference = prefs.getString("PREF_DEFAULT_ACTION", "open-in-browser");
 		if (ListPreference.equalsIgnoreCase("open-in-browser")) {
-			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse((String) item.getUrl()));
-			startActivity(viewIntent);
+			viewUrl(pos, item.getUrl());
 		} else if (ListPreference.equalsIgnoreCase("view-comments")) {
 			viewComments(pos, item);
 		} else if (ListPreference.equalsIgnoreCase("mobile-adapted-view")) {
-			Intent viewIntent = new Intent("android.intent.action.VIEW",
-					Uri.parse((String) "http://www.google.com/gwt/x?u=" + item.getUrl()));
+			viewUrl(pos, "http://www.google.com/gwt/x?u=" + item.getUrl());
+		}
+	}
+
+	private void viewUrl(int pos, String url) {
+		if (!haveDetailsFrame) {
+			// We don't have any place to put the web page on this screen,
+			// so display it in a new activity.
+			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
 			startActivity(viewIntent);
+		} else {
+			// We can display the URL as an embedded web view.
+			aa.setCheckedPosition(pos);
+			aa.notifyDataSetChanged();
+			Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
+			if (fragment == null || !(fragment instanceof WebViewFragment)
+					|| ((WebViewFragment) fragment).getUrl() != url) {
+				fragment = WebViewFragment.newInstance(url);
+				FragmentTransaction ft = getFragmentManager().beginTransaction();
+				ft.replace(R.id.hnDetailsFrame, fragment);
+				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+				ft.commit();
+			}			
 		}
 	}
 
