@@ -16,7 +16,10 @@ import org.apache.http.protocol.HTTP;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -52,6 +55,48 @@ public class Main extends NewsActivity {
 	@Override
 	protected String getDefaultFeedUrl() {
 		return getString(R.string.hnfeed);
+	}
+
+	@Override
+	protected void configureActionBar() {
+		super.configureActionBar();
+		ActionBar bar = getActionBar();
+		bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		addLinkTab(bar, "Hacker News", "");
+		addLinkTab(bar, "Best", "best");
+		addLinkTab(bar, "Active", "active");
+		// TODO: Note that some links, like /newest, return pages that we can't
+		// yet parse.
+		//addLinkTab(bar, "New", "newest");
+	}
+
+	private void addLinkTab(ActionBar bar, String title, String urlFragment) {
+		bar.addTab(bar.newTab().setText(title).setTabListener(new TabListener(urlFragment)));
+	}
+
+	private class TabListener implements ActionBar.TabListener {
+		String urlFragment;
+		
+		TabListener(String _urlFragment) {
+			urlFragment = _urlFragment;
+		}
+		
+		@Override
+		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			// TODO: We should probably try to do something intelligent with
+			// the FragmentTransaction here at some point.
+			loadNewsForUrlFragment(urlFragment);
+		}
+
+		@Override
+		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		}
+
+		@Override
+		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		}
 	}
 
 	private final class MainHandler extends NewsActivityHandler {
@@ -243,20 +288,25 @@ public class Main extends NewsActivity {
     	case LIST_NOOB_ID:
     	case LIST_NEWS_ID:
     		try {
-				dialog = ProgressDialog.show(Main.this, "", "Reloading. Please wait...", true);
-				new Thread(new Runnable(){
-					public void run() {
-						String hnFeed = getDefaultFeedUrl();
-						newsUrl = hnFeed + item.toString();
-						refreshNews();
-						dialog.dismiss();
-						handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-					}
-				}).start();
+				final String urlFragment = item.toString();
+				loadNewsForUrlFragment(urlFragment);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
     	}
     	return true;
     }
+
+	private void loadNewsForUrlFragment(final String urlFragment) {
+		dialog = ProgressDialog.show(Main.this, "", "Loading. Please wait...", true);
+		new Thread(new Runnable(){
+			public void run() {
+				String hnFeed = getDefaultFeedUrl();
+				newsUrl = hnFeed + urlFragment;
+				refreshNews();
+				dialog.dismiss();
+				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+			}
+		}).start();
+	}
 }

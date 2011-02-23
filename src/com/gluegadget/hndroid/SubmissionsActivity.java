@@ -3,6 +3,7 @@ package com.gluegadget.hndroid;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -15,6 +16,15 @@ public class SubmissionsActivity extends NewsActivity {
     	final Bundle extras = getIntent().getExtras();
     	TextView hnTopDesc = (TextView)this.findViewById(R.id.hnTopDesc);
     	hnTopDesc.setText(extras.getString("title"));
+
+		dialog = ProgressDialog.show(SubmissionsActivity.this, "", "Loading. Please wait...", true);
+		new Thread(new Runnable(){
+			public void run() {
+				refreshNews();
+				dialog.dismiss();
+				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+			}
+		}).start();    
     }
 
 	@Override

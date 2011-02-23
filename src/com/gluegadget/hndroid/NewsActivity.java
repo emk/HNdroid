@@ -57,6 +57,7 @@ abstract class NewsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		configureActionBar();
 	
 		handler = createHandler();
 		newsUrl = getDefaultFeedUrl();
@@ -75,21 +76,15 @@ abstract class NewsActivity extends Activity {
 	            // This will involve storing more information in our
 	            // application.
 		}
-		
-		dialog = ProgressDialog.show(NewsActivity.this, "", "Loading. Please wait...", true);
-		new Thread(new Runnable(){
-			public void run() {
-				refreshNews();
-				dialog.dismiss();
-				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-			}
-		}).start();
 	}
 
 	protected abstract String getDefaultFeedUrl();
 
 	protected Handler createHandler() {
 		return new NewsActivityHandler();
+	}
+
+	protected void configureActionBar() {
 	}
 
 	protected class NewsActivityHandler extends Handler {
