@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
@@ -35,12 +34,6 @@ public class Main extends NewsActivity {
 	static final private int MENU_LOGIN = 2;
 	static final private int MENU_LOGOUT = 3;
 	static final private int MENU_PREFERENCES = 4;
-	
-	private static final int LIST_MENU_GROUP = 10;
-	private static final int LIST_NEWS_ID = 11;
-	private static final int LIST_BEST_ID = 12;
-	private static final int LIST_ACTIVE_ID = 13;
-	private static final int LIST_NOOB_ID = 14;
 	
 	static final private int LOGIN_FAILED = 2;
 	static final private int LOGIN_SUCCESSFULL = 3;
