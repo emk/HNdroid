@@ -1,4 +1,5 @@
 
     <resources>
         <color name="newsItemHighlight">#CCF</color>
+        <color name="detailsBackground">#FFF</color>
     </resources>
