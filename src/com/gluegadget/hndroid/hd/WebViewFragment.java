@@ -42,6 +42,9 @@ class WebViewFragment extends Fragment {
 		settings.setJavaScriptEnabled(true);
 		settings.setBuiltInZoomControls(true);
 		settings.setPluginState(WebSettings.PluginState.ON);
+		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+		settings.setUseWideViewPort(true);
+		webView.setInitialScale(0);
 		
 		webView.setWebChromeClient(new WebChromeClient () {
 			@Override
