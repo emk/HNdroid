@@ -1,10 +1,15 @@
 package com.gluegadget.hndroid.hd;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -30,6 +35,16 @@ class WebViewFragment extends Fragment {
 		return fragment;
 	}
 	
+	public String getUrl() {
+		return getArguments().getString("url");
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -77,8 +92,25 @@ class WebViewFragment extends Fragment {
 		webView.loadUrl(getUrl());
 		return view;
 	}
-	
-	public String getUrl() {
-		return getArguments().getString("url");
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		
+		MenuItem menuItemShare = menu.add(R.string.menu_share);
+		menuItemShare.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		menuItemShare.setIcon(android.R.drawable.ic_menu_share);
+		menuItemShare.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_TITLE, webView.getTitle());
+				intent.putExtra(Intent.EXTRA_SUBJECT, webView.getTitle());
+				intent.putExtra(Intent.EXTRA_TEXT, getUrl());
+				getActivity().startActivity(intent);
+				return true;
+			}
+		});
 	}
 }
