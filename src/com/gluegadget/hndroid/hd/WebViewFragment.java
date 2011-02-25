@@ -2,6 +2,7 @@ package com.gluegadget.hndroid.hd;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +16,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 /**
  * Honeycomb also provides a WebViewFragment, but nobody has bothered
@@ -83,9 +83,8 @@ class WebViewFragment extends Fragment {
 			public void onDownloadStart(String url, String userAgent,
 					String contentDisposition, String mimetype,
 					long contentLength) {
-				Toast.makeText(getActivity(),
-					R.string.unsupported_content_type,
-					Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				getActivity().startActivity(intent);
 			}
 		});
 		
