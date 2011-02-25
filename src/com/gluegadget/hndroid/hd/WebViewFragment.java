@@ -29,6 +29,7 @@ class WebViewFragment extends Fragment {
 			Bundle savedInstanceState) {
 		view = new WebView(getActivity());
 		view.getSettings().setJavaScriptEnabled(true);
+		view.getSettings().setBuiltInZoomControls(true);
 		view.loadUrl(getUrl());
 		return view;
 	}
