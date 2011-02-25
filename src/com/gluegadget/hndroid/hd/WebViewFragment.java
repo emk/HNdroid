@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
@@ -37,8 +38,10 @@ class WebViewFragment extends Fragment {
 		progressBar.setIndeterminate(true);
 		
 		webView = (WebView) view.findViewById(R.id.web_view);
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setBuiltInZoomControls(true);
+		WebSettings settings = webView.getSettings();
+		settings.setJavaScriptEnabled(true);
+		settings.setBuiltInZoomControls(true);
+		settings.setPluginState(WebSettings.PluginState.ON);
 		
 		webView.setWebChromeClient(new WebChromeClient () {
 			@Override
