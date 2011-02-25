@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 
-public class Preferences extends PreferenceActivity {
+public class PreferencesActivity extends PreferenceActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

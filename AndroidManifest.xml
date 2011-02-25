@@ -19,7 +19,7 @@
 				<action android:name="android.apwidget.action.APPWIDGET_CONFIGURE"/>
 			</intent-filter>
 		</activity>
-		<activity android:name=".Preferences" android:label="HN Preferences" />
+		<activity android:label="HN Preferences" android:name=".PreferencesActivity"/>
 		<receiver android:name=".KarmaWidget" android:label="HN Karma">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

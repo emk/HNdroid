@@ -217,7 +217,7 @@ public class MainActivity extends NewsActivity {
     	menuItemPreferences.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				Intent intent = new Intent(MainActivity.this, Preferences.class);
+				Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
 				startActivity(intent);
 				
 				return true;
