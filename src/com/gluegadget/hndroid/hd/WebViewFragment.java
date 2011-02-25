@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
 /**
  * Honeycomb also provides a WebViewFragment, but nobody has bothered
@@ -13,7 +15,8 @@ import android.webkit.WebView;
  * reinvent the wheel, and try to keep it simple.
  */
 class WebViewFragment extends Fragment {
-	WebView view;
+	ProgressBar progressBar;
+	WebView webView;
 	
 	public static WebViewFragment newInstance(String url) {
 		Bundle args = new Bundle();
@@ -27,10 +30,30 @@ class WebViewFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		view = new WebView(getActivity());
-		view.getSettings().setJavaScriptEnabled(true);
-		view.getSettings().setBuiltInZoomControls(true);
-		view.loadUrl(getUrl());
+		View view = inflater.inflate(R.layout.web_view_fragment, null);
+		
+		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+		progressBar.setMax(100);
+		progressBar.setIndeterminate(true);
+		
+		webView = (WebView) view.findViewById(R.id.web_view);
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setBuiltInZoomControls(true);
+		
+		webView.setWebChromeClient(new WebChromeClient () {
+			@Override
+			public void onProgressChanged(WebView view, int newProgress) {
+				if (newProgress < 100) {
+					progressBar.setIndeterminate(false);
+					progressBar.setProgress(newProgress);
+				} else {
+					progressBar.setVisibility(View.GONE);
+					webView.setVisibility(View.VISIBLE);
+				}
+			}
+		});
+		
+		webView.loadUrl(getUrl());
 		return view;
 	}
 	
