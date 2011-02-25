@@ -30,7 +30,7 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
-public class Main extends NewsActivity {
+public class MainActivity extends NewsActivity {
 	static final private int LOGIN_FAILED = 2;
 	static final private int LOGIN_SUCCESSFULL = 3;
 	
@@ -98,10 +98,10 @@ public class Main extends NewsActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case LOGIN_FAILED:
-				Toast.makeText(Main.this, "Login failed :(", Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this, "Login failed :(", Toast.LENGTH_LONG).show();
 				break;
 			case LOGIN_SUCCESSFULL:
-				Toast.makeText(Main.this, "Successful login :)", Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this, "Successful login :)", Toast.LENGTH_LONG).show();
 				refreshNews();
 				break;
 			default:
@@ -114,7 +114,7 @@ public class Main extends NewsActivity {
     	@Override
     	public void ready(final String username, final String password) {
     		try {
-    			dialog = ProgressDialog.show(Main.this, "", "Trying to login. Please wait...", true);
+    			dialog = ProgressDialog.show(MainActivity.this, "", "Trying to login. Please wait...", true);
     			new Thread(new Runnable(){
     				public void run() {
     					Integer message = 0;
@@ -205,7 +205,7 @@ public class Main extends NewsActivity {
     	menuItemLogin.setIcon(R.drawable.ic_menu_login);
     	menuItemLogin.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
-    			LoginDialog loginDialog = new LoginDialog(Main.this, "", new OnLoginListener());
+    			LoginDialog loginDialog = new LoginDialog(MainActivity.this, "", new OnLoginListener());
     			loginDialog.show();
 
     			return true;
@@ -217,7 +217,7 @@ public class Main extends NewsActivity {
     	menuItemPreferences.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				Intent intent = new Intent(Main.this, Preferences.class);
+				Intent intent = new Intent(MainActivity.this, Preferences.class);
 				startActivity(intent);
 				
 				return true;
@@ -257,7 +257,7 @@ public class Main extends NewsActivity {
 	 * @param context The current activity.
 	 */
 	static void returnToMain(Context context) {
-		Intent intent = new Intent(context, Main.class);
+		Intent intent = new Intent(context, MainActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		context.startActivity(intent);
 	}

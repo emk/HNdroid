@@ -158,7 +158,7 @@ public class CommentsFragment extends Fragment {
     						nvps.add(new BasicNameValuePair("text", text));
     						nvps.add(new BasicNameValuePair("fnid", fnId));
     						httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-    						SharedPreferences settings = getActivity().getSharedPreferences(Main.PREFS_NAME, 0);
+    						SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
     			    		String cookie = settings.getString("cookie", "");
     			    		httpost.addHeader("Cookie", "user=" + cookie);
     						httpclient.execute(httpost);
@@ -188,7 +188,7 @@ public class CommentsFragment extends Fragment {
     				public void run() {
     					try {
     						DefaultHttpClient httpclient = new DefaultHttpClient();
-    						SharedPreferences settings = getActivity().getSharedPreferences(Main.PREFS_NAME, 0);
+    						SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
     			    		String cookie = settings.getString("cookie", "");
     						HttpGet httpget = new HttpGet(replyUrl);
     			    		httpget.addHeader("Cookie", "user=" + cookie);
@@ -291,7 +291,7 @@ public class CommentsFragment extends Fragment {
         			dialog = ProgressDialog.show(getActivity(), "", "Voting. Please wait...", true);
 			    	new Thread(new Runnable(){
 			    		public void run() {
-			    			SharedPreferences settings = getActivity().getSharedPreferences(Main.PREFS_NAME, 0);
+			    			SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
 			        		String cookie = settings.getString("cookie", "");
 			        		DefaultHttpClient httpclient = new DefaultHttpClient();
 			        		HttpGet httpget = new HttpGet(newsContexted.getUpVoteUrl());
@@ -319,7 +319,7 @@ public class CommentsFragment extends Fragment {
     private void refreshComments(String uri) {
     	try {
     		commentsList.clear();
-    		SharedPreferences settings = getActivity().getSharedPreferences(Main.PREFS_NAME, 0);
+    		SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
     		String cookie = settings.getString("cookie", "");
     		DefaultHttpClient httpclient = new DefaultHttpClient();
     		HttpGet httpget = new HttpGet(uri);

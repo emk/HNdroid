@@ -18,7 +18,7 @@ public class Preferences extends PreferenceActivity {
 		// just inherit from it, but we need to inherit from
 		// PreferenceActivity instead.
 		if (item.getItemId() == android.R.id.home) {
-			Main.returnToMain(this);
+			MainActivity.returnToMain(this);
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);

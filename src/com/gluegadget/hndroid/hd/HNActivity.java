@@ -11,7 +11,7 @@ public class HNActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
-			Main.returnToMain(this);
+			MainActivity.returnToMain(this);
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
