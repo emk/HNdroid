@@ -1,4 +1,4 @@
-package com.gluegadget.hndroid;
+package com.gluegadget.hndroid.hd;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

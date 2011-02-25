@@ -1,4 +1,4 @@
-package com.gluegadget.hndroid;
+package com.gluegadget.hndroid.hd;
 
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;

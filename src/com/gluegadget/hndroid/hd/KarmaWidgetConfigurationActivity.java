@@ -1,4 +1,4 @@
-package com.gluegadget.hndroid;
+package com.gluegadget.hndroid.hd;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
@@ -11,7 +11,7 @@ import android.widget.EditText;
 
 public class KarmaWidgetConfigurationActivity extends Activity {
 	private static final String PREFS_NAME
-		= "com.gluegadget.hndroid.KarmaWidget";
+		= "com.gluegadget.hndroid.hd.KarmaWidget";
 	
 	private static final String PREF_PREFIX_KEY = "prefix_";
 	

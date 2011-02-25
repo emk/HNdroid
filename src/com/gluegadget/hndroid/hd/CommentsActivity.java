@@ -1,4 +1,4 @@
-package com.gluegadget.hndroid;
+package com.gluegadget.hndroid.hd;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
