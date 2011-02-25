@@ -42,7 +42,9 @@ class WebViewFragment extends Fragment {
 		settings.setJavaScriptEnabled(true);
 		settings.setBuiltInZoomControls(true);
 		settings.setPluginState(WebSettings.PluginState.ON);
-		settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
+		// This makes some mobile-adapted web pages too narrow,
+		// and disables the zoom. *sigh*
+		//settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
 		settings.setUseWideViewPort(true);
 		webView.setInitialScale(0);
 		
