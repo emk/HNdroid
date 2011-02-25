@@ -28,6 +28,7 @@ class WebViewFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		view = new WebView(getActivity());
+		view.getSettings().setJavaScriptEnabled(true);
 		view.loadUrl(getUrl());
 		return view;
 	}
