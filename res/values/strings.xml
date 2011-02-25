@@ -14,4 +14,5 @@
     <string name="context_upvote">Upvote</string>
     <string name="context_google_mobile">Mobile adapted view</string>
     <string name="menu_refresh_comments">Refresh Comments</string>
+    <string name="unsupported_content_type">Content type not supported.</string>
 </resources>

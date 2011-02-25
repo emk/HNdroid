@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 /**
  * Honeycomb also provides a WebViewFragment, but nobody has bothered
@@ -58,6 +60,17 @@ class WebViewFragment extends Fragment {
 					progressBar.setVisibility(View.GONE);
 					webView.setVisibility(View.VISIBLE);
 				}
+			}
+		});
+		
+		webView.setDownloadListener(new DownloadListener() {
+			@Override
+			public void onDownloadStart(String url, String userAgent,
+					String contentDisposition, String mimetype,
+					long contentLength) {
+				Toast.makeText(getActivity(),
+					R.string.unsupported_content_type,
+					Toast.LENGTH_LONG).show();
 			}
 		});
 		
