@@ -15,6 +15,7 @@ import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 /**
@@ -52,7 +53,6 @@ class WebViewFragment extends Fragment {
 		
 		progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 		progressBar.setMax(100);
-		progressBar.setIndeterminate(true);
 		
 		webView = (WebView) view.findViewById(R.id.web_view);
 		WebSettings settings = webView.getSettings();
@@ -64,20 +64,22 @@ class WebViewFragment extends Fragment {
 		//settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
 		settings.setUseWideViewPort(true);
 		webView.setInitialScale(0);
-		
+
 		webView.setWebChromeClient(new WebChromeClient () {
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
-				if (newProgress < 100) {
-					progressBar.setIndeterminate(false);
-					progressBar.setProgress(newProgress);
-				} else {
-					progressBar.setVisibility(View.GONE);
-					webView.setVisibility(View.VISIBLE);
-				}
+				progressBar.setIndeterminate(false);
+				progressBar.setProgress(newProgress);
 			}
 		});
 		
+		webView.setWebViewClient(new WebViewClient() {
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				progressBar.setVisibility(View.GONE);
+			}			
+		});
+
 		webView.setDownloadListener(new DownloadListener() {
 			@Override
 			public void onDownloadStart(String url, String userAgent,
