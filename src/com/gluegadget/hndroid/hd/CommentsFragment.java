@@ -83,7 +83,8 @@ public class CommentsFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		newsListView = new ListView(getActivity());
+		View view = inflater.inflate(R.layout.comments_fragment, null);
+		newsListView = (ListView) view.findViewById(R.id.comment_list);
 		registerForContextMenu(newsListView);
         int layoutID = R.layout.comments_list_item;
         aa = new CommentsAdapter(getActivity(), layoutID , commentsList);
@@ -98,7 +99,7 @@ public class CommentsFragment extends Fragment {
     		}
     	}).start();
 
-		return newsListView;
+		return view;
 	}
 
 	public void doRefreshComments() {
