@@ -20,9 +20,8 @@ public class CommentsAdapter extends ArrayAdapter<Comment> {
 	}
 	
 	static class ViewHolder {
-		TextView title;
-		TextView score;
-		TextView author;
+		TextView metadata;
+		TextView text;
 	}
 	
 	@Override
@@ -34,23 +33,28 @@ public class CommentsAdapter extends ArrayAdapter<Comment> {
 		if (convertView == null) {
 			convertView = mInflater.inflate(resource, parent, false);
 			holder = new ViewHolder();
-			holder.title = (TextView)convertView.findViewById(R.id.title);
-			holder.score = (TextView)convertView.findViewById(R.id.score);
-			holder.author = (TextView)convertView.findViewById(R.id.author);
+			holder.metadata = (TextView)convertView.findViewById(R.id.metadata);
+			holder.text = (TextView)convertView.findViewById(R.id.text);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder)convertView.getTag();
 		}
-		
-		holder.title.setPadding(item.getPadding() + 1, 10, 10, 10);
-		holder.title.setText(item.getTitle());
-		holder.score.setText(item.getScore());
-		
-		if (item.getAuthor() == "")
-			holder.author.setText(item.getAuthor());
-		else
-			holder.author.setText("by " + item.getAuthor());
 
+		String metadata = item.getScore();
+		if (item.getAuthor() != "")
+			metadata += " by " + item.getAuthor();
+		holder.metadata.setText(metadata);
+		indentView(holder.metadata, item);
+		
+		holder.text.setText(item.getTitle());
+		indentView(holder.text, item);
 		return convertView;
+	}
+
+	private void indentView(TextView view, Comment item) {
+		int t = view.getPaddingTop();
+		int r = view.getPaddingRight();
+		int b = view.getPaddingBottom();
+		view.setPadding(item.getPadding() + 1, t, r, b);
 	}
 }
