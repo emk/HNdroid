@@ -68,6 +68,10 @@ abstract class NewsActivity extends HNActivity {
 		newsListView.setAdapter(aa);
 		newsListView.setOnItemClickListener(clickListener);
 		
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		ft.add(R.id.hnDetailsFrame, new WelcomeFragment());
+		ft.commit();
+		
 		updateDetailsFrame();
 	}
 
@@ -95,6 +99,7 @@ abstract class NewsActivity extends HNActivity {
 		if (fragment != null) {
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			ft.remove(fragment);
+			ft.add(R.id.hnDetailsFrame, new WelcomeFragment());
 			ft.commit();
 		}
 	}

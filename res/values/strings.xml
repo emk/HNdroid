@@ -15,4 +15,9 @@
     <string name="context_google_mobile">Mobile adapted view</string>
     <string name="menu_refresh_comments">Refresh Comments</string>
     <string name="menu_share">Share</string>
+    <string name="developer_email">mailto:apps@kiddsoftware.com</string>
+    <string name="feedback_subject">HNdroid HD feedback</string>
+    <string name="welcome_title">Welcome to HNdroid HD!</string>
+    <string name="welcome_text">We\'re upgrading HNdroid to support Honeycomb and widescreen tablets. Please let us know what to work on next!</string>
+    <string name="welcome_button_label">E-mail us your ideas and bug reports</string>
 </resources>
