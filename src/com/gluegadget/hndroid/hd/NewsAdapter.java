@@ -84,7 +84,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
 				holder.author.setText("by " + item.getAuthor() + " from " + item.getDomain());
 			    
 	    if (position == checkedPosition) {
-	    	int highlight = context.getResources().getColor(R.color.newsItemHighlight);
+	    	int highlight = context.getResources().getColor(R.color.news_item_highlight);
 			convertView.setBackgroundColor(highlight);
 	    } else {
 			convertView.setBackgroundColor(defaultBackgroundColor);

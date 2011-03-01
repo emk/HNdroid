@@ -1,5 +1,6 @@
 
     <resources>
-        <color name="newsItemHighlight">#6595f9</color>
-        <color name="detailsBackground">#FFF</color>
+        <color name="news_item_highlight">#6595f9</color>
+        <color name="details_background">#FFF</color>
+        <color name="details_border">#cccccc</color>
     </resources>
