@@ -224,7 +224,8 @@ public class CommentsFragment extends Fragment {
 	}
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-    	super.onCreateContextMenu(menu, v, menuInfo);
+    	// If we call this, we get all the context menu items from our activity, too.  Ick.
+    	//super.onCreateContextMenu(menu, v, menuInfo);
     	
     	AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
     	final Comment newsContexted = (Comment) newsListView.getAdapter().getItem(info.position);
