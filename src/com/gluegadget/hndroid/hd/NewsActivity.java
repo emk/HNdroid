@@ -50,7 +50,7 @@ abstract class NewsActivity extends HNActivity {
 	protected ListView newsListView;
 	protected NewsAdapter aa;
 	protected ArrayList<News> news = new ArrayList<News>();
-	boolean haveDetailsFrame;
+	boolean showDetailsFrame;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -62,33 +62,31 @@ abstract class NewsActivity extends HNActivity {
 		handler = createHandler();
 		newsUrl = getDefaultFeedUrl();
 	
-		hookUpViews();
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// Get rid of our details fragment.
-		// TODO: This works, but is it correct?
-		detachDetailsFragmentIfPresent();
-		setContentView(R.layout.main);
-		hookUpViews();
-	}
-
-	private void hookUpViews() {
 		newsListView = (ListView)this.findViewById(R.id.hnListView);
 		registerForContextMenu(newsListView);
 		aa = new NewsAdapter(this, R.layout.news_list_item, news);
 		newsListView.setAdapter(aa);
 		newsListView.setOnItemClickListener(clickListener);
 		
-		haveDetailsFrame = (findViewById(R.id.hnDetailsFrame) != null);
-		if (haveDetailsFrame) {
+		updateDetailsFrame();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		updateDetailsFrame();
+	}
+
+	private void updateDetailsFrame() {
+		showDetailsFrame = getResources().getBoolean(R.bool.show_details);
+		int visibility = showDetailsFrame ? View.VISIBLE : View.GONE;
+		findViewById(R.id.hnDetailsFrame).setVisibility(visibility);
+		if (showDetailsFrame) {
 			newsListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			// TODO: Automatically reshow what we were last looking at
 			// when we're restored from a saved state?
-	        // This will involve storing more information in our
-	        // application.
+		    // This will involve storing more information in our
+		    // application.
 		}
 	}
 
@@ -152,15 +150,15 @@ abstract class NewsActivity extends HNActivity {
 	}
 
 	private void viewUrl(int pos, String url) {
-		if (!haveDetailsFrame) {
+		if (!showDetailsFrame) {
+			resetDetailsFrame();
 			// We don't have any place to put the web page on this screen,
 			// so display it in a new activity.
 			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
 			startActivity(viewIntent);
 		} else {
 			// We can display the URL as an embedded web view.
-			aa.setCheckedPosition(pos);
-			aa.notifyDataSetChanged();
+			updateCheckedNewsItem(pos);
 			Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
 			if (fragment == null || !(fragment instanceof WebViewFragment)
 					|| ((WebViewFragment) fragment).getUrl() != url) {
@@ -176,7 +174,8 @@ abstract class NewsActivity extends HNActivity {
 	void viewComments(int pos, final News item) {
 		String commentsUrl = item.getCommentsUrl();
 		String title = item.getTitle();
-		if (!haveDetailsFrame) {
+		if (!showDetailsFrame) {
+			resetDetailsFrame();
 			// We don't have any place to put the comments on this screen,
 			// so display them in a new activity.
 			Intent intent = new Intent(NewsActivity.this, CommentsActivity.class);
@@ -184,9 +183,7 @@ abstract class NewsActivity extends HNActivity {
 			intent.putExtra("title", title);
 			startActivity(intent);
 		} else {
-			// We can display the comments inside of this activity.
-			aa.setCheckedPosition(pos);
-			aa.notifyDataSetChanged();
+			updateCheckedNewsItem(pos);
 			Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
 			if (fragment == null || !(fragment instanceof CommentsFragment)
 					|| ((CommentsFragment) fragment).getCommentsUrl() != commentsUrl) {
@@ -197,6 +194,17 @@ abstract class NewsActivity extends HNActivity {
 	            ft.commit();
 			}
 		}
+	}
+
+	private void resetDetailsFrame() {
+		detachDetailsFragmentIfPresent();
+		aa.clearCheckedPosition();
+		aa.notifyDataSetChanged();
+	}
+
+	private void updateCheckedNewsItem(int pos) {
+		aa.setCheckedPosition(pos);
+		aa.notifyDataSetChanged();
 	}
 
 	protected void refreshNews() {
