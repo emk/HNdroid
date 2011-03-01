@@ -373,7 +373,7 @@ abstract class NewsActivity extends HNActivity {
 									e.printStackTrace();
 								}
 								dialog.dismiss();
-								handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+								//handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
 							}
 						}).start();
 						return true;

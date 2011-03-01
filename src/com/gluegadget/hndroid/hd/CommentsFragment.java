@@ -23,8 +23,6 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,9 +36,6 @@ import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class CommentsFragment extends Fragment {
-
-	static final private int NOTIFY_DATASET_CHANGED = 1;
-	static final private int NOTIFY_COMMENT_ADDED = 2;
 
 	static final private int CONTEXT_REPLY = 1;
 	static final private int CONTEXT_UPVOTE = 2;
@@ -88,28 +83,8 @@ public class CommentsFragment extends Fragment {
         int layoutID = R.layout.comments_list_item;
         aa = new CommentsAdapter(getActivity(), layoutID , commentsList);
         newsListView.setAdapter(aa);
-
-    	dialog = ProgressDialog.show(getActivity(), "", "Loading. Please wait...", true);
-    	new Thread(new Runnable(){
-    		public void run() {
-    			refreshComments(getCommentsUrl());
-    			dialog.dismiss();
-    			handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-    		}
-    	}).start();
-
+    	refreshComments();
 		return view;
-	}
-
-	public void doRefreshComments() {
-		dialog = ProgressDialog.show(getActivity(), "", "Reloading. Please wait...", true);
-		new Thread(new Runnable(){
-			public void run() {
-				refreshComments(getCommentsUrl());
-				dialog.dismiss();
-				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-			}
-		}).start();
 	}
 
 	public boolean canPostComment() {
@@ -120,29 +95,6 @@ public class CommentsFragment extends Fragment {
 		CommentDialog commentDialog = new CommentDialog(getActivity(), "Comment on submission", new OnCommentListener());
 		commentDialog.show();
 	}
-
-	Handler handler = new Handler(){
-    	@Override
-    	public void handleMessage(Message msg) {
-    		switch(msg.what) {
-    		case NOTIFY_DATASET_CHANGED:
-    			aa.notifyDataSetChanged();
-    			break;
-    		case NOTIFY_COMMENT_ADDED:
-    			dialog = ProgressDialog.show(getActivity(), "", "Reloading. Please wait...", true);
-    	    	new Thread(new Runnable(){
-    	    		public void run() {
-    	    			refreshComments(getCommentsUrl());
-    	    			dialog.dismiss();
-    	    			handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
-    	    		}
-    	    	}).start();
-    			break;
-    		default:
-    			break;
-    		}
-    	}
-    };
 
     private class OnCommentListener implements CommentDialog.ReadyListener {
     	@Override
@@ -164,10 +116,10 @@ public class CommentsFragment extends Fragment {
     						httpclient.execute(httpost);
     						httpclient.getConnectionManager().shutdown();
     						dialog.dismiss();
-    						handler.sendEmptyMessage(NOTIFY_COMMENT_ADDED);
+    						notifyCommentAdded();
     					} catch (Exception e) {
     						dialog.dismiss();
-    						handler.sendEmptyMessage(0);
+    						// TODO: Notify user of failure?
     						e.printStackTrace();
     					}
     				}
@@ -210,10 +162,10 @@ public class CommentsFragment extends Fragment {
         						httpclient.getConnectionManager().shutdown();
     			    		}
     						dialog.dismiss();
-    						handler.sendEmptyMessage(NOTIFY_COMMENT_ADDED);
+    						notifyCommentAdded();
     					} catch (Exception e) {
     						dialog.dismiss();
-    						handler.sendEmptyMessage(0);
+    						// TODO: Notify user of failure?
     						e.printStackTrace();
     					}
     				}
@@ -225,7 +177,16 @@ public class CommentsFragment extends Fragment {
     	public void ready(final String text) {}
     }
 
-    @Override
+	private void notifyCommentAdded() {
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				refreshComments();
+			}    							
+		});
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 	
@@ -234,7 +195,7 @@ public class CommentsFragment extends Fragment {
 		menuItemRefresh.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			public boolean onMenuItemClick(MenuItem item) {
 				try {
-					doRefreshComments();
+					refreshComments();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -307,7 +268,9 @@ public class CommentsFragment extends Fragment {
 								e.printStackTrace();
 							}
 			    			dialog.dismiss();
-			    			handler.sendEmptyMessage(NOTIFY_COMMENT_ADDED);
+			    			// The old code used to do this so our upvotes would show up,
+			    			// but I find it a little bit disruptive on the larger screen.
+			    			//notifyCommentAdded();
 			    		}
 			    	}).start();
         			return true;
@@ -315,8 +278,28 @@ public class CommentsFragment extends Fragment {
         	});
     	}
     }
-    
-    private void refreshComments(String uri) {
+
+	private void refreshComments() {
+		dialog = ProgressDialog.show(getActivity(), "", "Loading. Please wait...", true);
+		new Thread(new Runnable(){
+			public void run() {
+				downloadAndParseComments(getCommentsUrl());
+				getActivity().runOnUiThread(new Runnable() {
+					public void run() {
+						dialog.dismiss();
+						aa.notifyDataSetChanged();
+
+						// Update our options menu now that we've parsed the page.
+						// This is necessary to show the "Comment" icon in the
+						// action bar immediately.
+						getActivity().invalidateOptionsMenu();
+					}
+				});
+			}
+		}).start();
+	}
+
+    private void downloadAndParseComments(String uri) {
     	try {
     		commentsList.clear();
     		SharedPreferences settings = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, 0);
@@ -386,15 +369,6 @@ public class CommentsFragment extends Fragment {
     			Comment commentEntry = new Comment("No comments.");
     			commentsList.add(commentEntry);
     		}
-
-			// Update our options menu now that we've parsed the page.
-			// This is necessary to show the "Comment" icon in the
-			// action bar immediately.
-			getActivity().runOnUiThread(new Runnable() {
-				public void run() {
-					getActivity().invalidateOptionsMenu();
-				}
-			});
     	} catch (MalformedURLException e) {
     		e.printStackTrace();
     	} catch (IOException e) {
