@@ -269,7 +269,7 @@ public class CommentsFragment extends Fragment {
     	AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
     	final Comment newsContexted = (Comment) newsListView.getAdapter().getItem(info.position);
     	
-    	menu.setHeaderTitle(newsContexted.getTitle()); 	
+    	menu.setHeaderTitle(newsContexted.getRawText()); 	
     	if (fnId != "" && newsContexted.getReplyToUrl() != "" && loggedIn) {
     		MenuItem originalLink = menu.add(0, CONTEXT_REPLY, 0, R.string.context_reply); 
     		originalLink.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
@@ -375,15 +375,7 @@ public class CommentsFragment extends Fragment {
     							replyToValue = replyToNode.getAttributeByName("href").toString().trim();
     						}
 
-                            TagNode font = commentSpan.findElementByName("font", true);
-                            String commentBody = font.getText().toString();
-
-                            TagNode[] ps = commentSpan.getElementsByName("p", true);
-
-                            for (TagNode p : ps) {
-                                commentBody += "\n\n" + Html.fromHtml(p.getText().toString()).toString();
-                            }
-
+                            String commentBody = cleaner.getInnerHtml(commentSpan);
     						commentEntry = new Comment(commentBody, scoreValue, authorValue, depthValue, replyToValue, upVoteUrl);
     					} else {
     						commentEntry = new Comment("[deleted]");

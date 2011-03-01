@@ -1,15 +1,18 @@
 package com.gluegadget.hndroid.hd;
 
+import android.text.Html;
+import android.text.Spanned;
+
 public class Comment {
-	private String title;
+	private String html;
 	private String author;
 	private String score;
 	private String replyToUrl; 
 	private String upVoteUrl;
 	private Integer padding;
 
-	public Comment(String _title, String _score, String _author, Integer _padding, String _replyToUrl, String _upVoteUrl) {
-		title = _title;
+	public Comment(String _html, String _score, String _author, Integer _padding, String _replyToUrl, String _upVoteUrl) {
+		html = _html;
 		score = _score;
 		author = _author;
 		padding = _padding;
@@ -25,18 +28,26 @@ public class Comment {
 			upVoteUrl = _upVoteUrl;
 	}
 
-	public Comment(String _title) {
-		this(_title, "", "", 0, "", "");
+	public Comment(String _html) {
+		this(_html, "", "", 0, "", "");
 	}
 	
 	public Integer getPadding() {
 		return padding;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getHtml() {
+		return html;
 	}
 
+	public String getRawText() {
+		return getStyledText().toString();
+	}
+	
+	public Spanned getStyledText() {
+		return Html.fromHtml(html);
+	}
+	
 	public String getScore() {
 		return score;
 	}
@@ -55,6 +66,6 @@ public class Comment {
 
 	@Override
 	public String toString() {
-		return author + ": " + title;
+		return author + ": " + html;
 	}
 }

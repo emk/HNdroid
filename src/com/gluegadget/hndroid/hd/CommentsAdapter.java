@@ -3,6 +3,7 @@ package com.gluegadget.hndroid.hd;
 import java.util.List;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class CommentsAdapter extends ArrayAdapter<Comment> {
 		holder.metadata.setText(metadata);
 		indentView(holder.metadata, item);
 		
-		holder.text.setText(item.getTitle());
+		holder.text.setText(item.getStyledText());
 		indentView(holder.text, item);
 		return convertView;
 	}
