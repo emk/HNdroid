@@ -21,8 +21,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -37,13 +35,11 @@ import android.widget.AdapterView.OnItemClickListener;
 abstract class NewsActivity extends HNActivity {
 
 	protected static final String PREFS_NAME = "user";
-	protected static final int NOTIFY_DATASET_CHANGED = 1;
 	private static final int CONTEXT_USER_SUBMISSIONS = 2;
 	private static final int CONTEXT_COMMENTS = 3;
 	private static final int CONTEXT_USER_LINK = 4;
 	private static final int CONTEXT_USER_UPVOTE = 5;
 	private static final int CONTEXT_GOOGLE_MOBILE = 6;
-	protected Handler handler;
 	protected String newsUrl;
 	protected String loginUrl = "";
 	protected ProgressDialog dialog;
@@ -59,7 +55,6 @@ abstract class NewsActivity extends HNActivity {
 		setContentView(R.layout.main);
 		configureActionBar();
 	
-		handler = createHandler();
 		newsUrl = getDefaultFeedUrl();
 	
 		newsListView = (ListView)this.findViewById(R.id.hnListView);
@@ -106,29 +101,9 @@ abstract class NewsActivity extends HNActivity {
 
 	protected abstract String getDefaultFeedUrl();
 
-	protected Handler createHandler() {
-		return new NewsActivityHandler();
-	}
-
 	protected void configureActionBar() {
 	}
 
-	protected class NewsActivityHandler extends Handler {
-		@Override
-		public void handleMessage(Message msg) {
-			switch(msg.what){
-			case NOTIFY_DATASET_CHANGED:
-				NewsActivity.this.detachDetailsFragmentIfPresent();
-				aa.clearCheckedPosition();
-				aa.notifyDataSetChanged();
-				newsListView.setSelection(0);
-				break;
-			default:
-				super.handleMessage(msg);
-			}
-		}
-	}
-	
 	OnItemClickListener clickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> newsAV, View view, int pos, long id) {
@@ -218,7 +193,15 @@ abstract class NewsActivity extends HNActivity {
 			public void run() {
 				downloadAndParseNews();
 				dialog.dismiss();
-				handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						detachDetailsFragmentIfPresent();
+						aa.clearCheckedPosition();
+						aa.notifyDataSetChanged();
+						newsListView.setSelection(0);
+					}
+				});
 			}
 		}).start();
 	}

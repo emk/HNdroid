@@ -23,17 +23,12 @@ import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
-public class MainActivity extends NewsActivity {
-	static final private int LOGIN_FAILED = 2;
-	static final private int LOGIN_SUCCESSFULL = 3;
-	
+public class MainActivity extends NewsActivity {	
 	static int DEFAULT_ACTION_PREFERENCES = 0;
 
 	private MenuItem menuItemRefresh;
@@ -41,11 +36,6 @@ public class MainActivity extends NewsActivity {
 	private MenuItem menuItemLogin;
 	private MenuItem menuItemPreferences;
 	
-	@Override
-	protected Handler createHandler() {
-		return new MainHandler();
-	}
-
 	@Override
 	protected String getDefaultFeedUrl() {
 		return getString(R.string.hnfeed);
@@ -93,21 +83,13 @@ public class MainActivity extends NewsActivity {
 		}
 	}
 
-	private final class MainHandler extends NewsActivityHandler {
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case LOGIN_FAILED:
-				Toast.makeText(MainActivity.this, "Login failed :(", Toast.LENGTH_LONG).show();
-				break;
-			case LOGIN_SUCCESSFULL:
-				Toast.makeText(MainActivity.this, "Successful login :)", Toast.LENGTH_LONG).show();
-				refreshNews();
-				break;
-			default:
-				super.handleMessage(msg);
-			}
-		}
+	void onLoginFailed() {
+		Toast.makeText(MainActivity.this, "Login failed :(", Toast.LENGTH_LONG).show();		
+	}
+	
+	void onLoginSucceeded() {
+		Toast.makeText(MainActivity.this, "Successful login :)", Toast.LENGTH_LONG).show();
+		refreshNews();		
 	}
 
     private class OnLoginListener implements LoginDialog.ReadyListener {
@@ -117,7 +99,7 @@ public class MainActivity extends NewsActivity {
     			dialog = ProgressDialog.show(MainActivity.this, "", "Trying to login. Please wait...", true);
     			new Thread(new Runnable(){
     				public void run() {
-    					Integer message = 0;
+    					boolean success = false;
     					try {
     						DefaultHttpClient httpclient = new DefaultHttpClient();
     						HttpGet httpget = new HttpGet("http://news.ycombinator.com" + loginUrl);
@@ -142,24 +124,34 @@ public class MainActivity extends NewsActivity {
     							entity.consumeContent();
     						}
     						List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-    						if (cookies.isEmpty()) {
-    							message = LOGIN_FAILED;
-    						} else {
+    						if (!cookies.isEmpty()) {
     							SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
     							SharedPreferences.Editor editor = settings.edit();
     							editor.putString("cookie", cookies.get(0).getValue());
     							editor.commit();
-    							message = LOGIN_SUCCESSFULL;
+    							success = true;
     						}
     						httpclient.getConnectionManager().shutdown();
     						dialog.dismiss();
-    						handler.sendEmptyMessage(message);
+    						dispatchLoginEvent(success);
     					} catch (Exception e) {
     						dialog.dismiss();
-    						handler.sendEmptyMessage(message);
+    						// TODO: Do something intelligent with errors.
     						e.printStackTrace();
     					}
     				}
+
+					private void dispatchLoginEvent(final boolean success) {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								if (success)
+									onLoginSucceeded();
+								else
+									onLoginFailed();
+							}
+						});
+					}
     			}).start();
     		} catch (Exception e) {
     			e.printStackTrace();
