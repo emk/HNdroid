@@ -37,7 +37,6 @@
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:gravity="top"
 		android:textColor="#424142"
-		android:autoLink="web"
 		android:minHeight="43dip"
 		android:textStyle="bold"
 		android:layout_toRightOf="@+id/comments"
