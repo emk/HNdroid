@@ -69,9 +69,7 @@ public class MainActivity extends NewsActivity {
 		
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			// TODO: We should probably try to do something intelligent with
-			// the FragmentTransaction here at some point.
-			loadNewsForUrlFragment(urlFragment);
+			loadNewsForUrlFragment(urlFragment, ft);
 		}
 
 		@Override
@@ -237,10 +235,10 @@ public class MainActivity extends NewsActivity {
     	return super.onPrepareOptionsMenu(menu); 
     }
 
-	private void loadNewsForUrlFragment(final String urlFragment) {
+	private void loadNewsForUrlFragment(final String urlFragment, FragmentTransaction ft) {
 		String hnFeed = getDefaultFeedUrl();
 		newsUrl = hnFeed + urlFragment;
-		refreshNews();
+		refreshNews(ft);
 	}
 
 	/**

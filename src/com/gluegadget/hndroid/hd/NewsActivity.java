@@ -62,11 +62,6 @@ abstract class NewsActivity extends HNActivity {
 		aa = new NewsAdapter(this, R.layout.news_list_item, news);
 		newsListView.setAdapter(aa);
 		newsListView.setOnItemClickListener(clickListener);
-		
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-		ft.add(R.id.hnDetailsFrame, new WelcomeFragment());
-		ft.commit();
-		
 		updateDetailsFrame();
 	}
 
@@ -89,14 +84,11 @@ abstract class NewsActivity extends HNActivity {
 		}
 	}
 
-	private void detachDetailsFragmentIfPresent() {
+	private void detachDetailsFragmentIfPresent(FragmentTransaction ft) {
 		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
-		if (fragment != null) {
-			FragmentTransaction ft = getFragmentManager().beginTransaction();
+		if (fragment != null)
 			ft.remove(fragment);
-			ft.add(R.id.hnDetailsFrame, new WelcomeFragment());
-			ft.commit();
-		}
+		ft.add(R.id.hnDetailsFrame, new WelcomeFragment());
 	}
 
 	protected abstract String getDefaultFeedUrl();
@@ -118,20 +110,25 @@ abstract class NewsActivity extends HNActivity {
 	};
 
 	private void onNewsItemClicked(int pos, final News item) {
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		String ListPreference = prefs.getString("PREF_DEFAULT_ACTION", "open-in-browser");
 		if (ListPreference.equalsIgnoreCase("open-in-browser")) {
-			viewUrl(pos, item.getUrl());
+			viewUrl(pos, item.getUrl(), ft);
 		} else if (ListPreference.equalsIgnoreCase("view-comments")) {
-			viewComments(pos, item);
+			viewComments(pos, item, ft);
 		} else if (ListPreference.equalsIgnoreCase("mobile-adapted-view")) {
-			viewUrl(pos, "http://www.google.com/gwt/x?u=" + item.getUrl());
+			viewUrl(pos, "http://www.google.com/gwt/x?u=" + item.getUrl(), ft);
 		}
+		
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.commit();		
 	}
 
-	private void viewUrl(int pos, String url) {
+	private void viewUrl(int pos, String url, FragmentTransaction ft) {
 		if (!showDetailsFrame) {
-			resetDetailsFrame();
+			resetDetailsFrame(ft);
 			// We don't have any place to put the web page on this screen,
 			// so display it in a new activity.
 			Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
@@ -143,19 +140,23 @@ abstract class NewsActivity extends HNActivity {
 			if (fragment == null || !(fragment instanceof WebViewFragment)
 					|| ((WebViewFragment) fragment).getUrl() != url) {
 				fragment = WebViewFragment.newInstance(url);
-				FragmentTransaction ft = getFragmentManager().beginTransaction();
 				ft.replace(R.id.hnDetailsFrame, fragment);
-				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-				ft.commit();
 			}			
 		}
 	}
 
 	void viewComments(int pos, final News item) {
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		viewComments(pos, item, ft);
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.commit();		
+	}
+	
+	void viewComments(int pos, final News item, FragmentTransaction ft) {
 		String commentsUrl = item.getCommentsUrl();
 		String title = item.getTitle();
 		if (!showDetailsFrame) {
-			resetDetailsFrame();
+			resetDetailsFrame(ft);
 			// We don't have any place to put the comments on this screen,
 			// so display them in a new activity.
 			Intent intent = new Intent(NewsActivity.this, CommentsActivity.class);
@@ -168,16 +169,13 @@ abstract class NewsActivity extends HNActivity {
 			if (fragment == null || !(fragment instanceof CommentsFragment)
 					|| ((CommentsFragment) fragment).getCommentsUrl() != commentsUrl) {
 				fragment = CommentsFragment.newInstance(commentsUrl);
-				FragmentTransaction ft = getFragmentManager().beginTransaction();
 				ft.replace(R.id.hnDetailsFrame, fragment);
-				ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-	            ft.commit();
 			}
 		}
 	}
 
-	private void resetDetailsFrame() {
-		detachDetailsFragmentIfPresent();
+	private void resetDetailsFrame(FragmentTransaction ft) {
+		detachDetailsFragmentIfPresent(ft);
 		aa.clearCheckedPosition();
 		aa.notifyDataSetChanged();
 	}
@@ -188,6 +186,14 @@ abstract class NewsActivity extends HNActivity {
 	}
 
 	protected void refreshNews() {
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		refreshNews(ft);
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.commit();
+	}
+	
+	protected void refreshNews(FragmentTransaction ft) {
+		detachDetailsFragmentIfPresent(ft);
 		dialog = ProgressDialog.show(this, "", "Loading news. Please wait...", true);
 		new Thread(new Runnable(){
 			public void run() {
@@ -196,7 +202,6 @@ abstract class NewsActivity extends HNActivity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						detachDetailsFragmentIfPresent();
 						aa.clearCheckedPosition();
 						aa.notifyDataSetChanged();
 						newsListView.setSelection(0);
