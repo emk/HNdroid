@@ -23,6 +23,10 @@ public class MainActivityTest extends
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		startActivity();
+	}
+
+	private void startActivity() {
 		activity = getActivity();
 		fragmentManager = activity.getFragmentManager();
 	}
@@ -81,4 +85,18 @@ public class MainActivityTest extends
 //			}
 //		});
 //	}
+	
+	public void testSaveAndRestoreShouldNotCrashTheActivity() throws Throwable {
+		waitForProgressDialogToBeDismissed();
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				clickItemAt(getNewsItemList(), 0);
+				fragmentManager.executePendingTransactions();
+			}
+		});
+		
+		activity.finish();
+		startActivity();
+	}
 }
