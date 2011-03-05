@@ -42,7 +42,7 @@ abstract class NewsActivity extends HNActivity {
 	private static final int CONTEXT_GOOGLE_MOBILE = 6;
 	protected String newsUrl;
 	protected String loginUrl = "";
-	protected ProgressDialog dialog;
+	private ProgressDialog dialog = null;
 	protected ListView newsListView;
 	protected NewsAdapter aa;
 	protected ArrayList<News> news = new ArrayList<News>();
@@ -185,6 +185,21 @@ abstract class NewsActivity extends HNActivity {
 		aa.notifyDataSetChanged();
 	}
 
+	// Return true if this activity is currently displaying a progress dialog.
+	// This API is included to make testing easier.
+	public boolean isShowingProgressDialog() {
+		return (dialog != null);
+	}
+	
+	protected void showProgressDialog(String message) {
+		dialog = ProgressDialog.show(this, "", message, true);
+	}
+
+	protected void hideProgressDialog() {
+		dialog.dismiss();
+		dialog = null;
+	}
+
 	protected void refreshNews() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		refreshNews(ft);
@@ -194,23 +209,23 @@ abstract class NewsActivity extends HNActivity {
 	
 	protected void refreshNews(FragmentTransaction ft) {
 		detachDetailsFragmentIfPresent(ft);
-		dialog = ProgressDialog.show(this, "", "Loading news. Please wait...", true);
+		showProgressDialog("Loading news. Please wait...");
 		new Thread(new Runnable(){
 			public void run() {
 				downloadAndParseNews();
-				dialog.dismiss();
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						aa.clearCheckedPosition();
 						aa.notifyDataSetChanged();
 						newsListView.setSelection(0);
+						hideProgressDialog();
 					}
 				});
 			}
 		}).start();
 	}
-	
+
 	protected void downloadAndParseNews() {
 		try {
 			news.clear();
@@ -347,7 +362,7 @@ abstract class NewsActivity extends HNActivity {
 				MenuItem upVote = menu.add(0, CONTEXT_USER_UPVOTE, 0, R.string.context_upvote);
 				upVote.setOnMenuItemClickListener(new OnMenuItemClickListener() {		
 					public boolean onMenuItemClick(MenuItem item) {
-						dialog = ProgressDialog.show(NewsActivity.this, "", "Voting. Please wait...", true);
+						showProgressDialog("Voting. Please wait...");
 						new Thread(new Runnable(){
 							public void run() {
 								SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -365,7 +380,7 @@ abstract class NewsActivity extends HNActivity {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								dialog.dismiss();
+								hideProgressDialog();
 								//handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
 							}
 						}).start();

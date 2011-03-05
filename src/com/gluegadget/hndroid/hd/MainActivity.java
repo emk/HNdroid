@@ -18,7 +18,6 @@ import org.htmlcleaner.TagNode;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.content.Intent;
@@ -94,7 +93,7 @@ public class MainActivity extends NewsActivity {
     	@Override
     	public void ready(final String username, final String password) {
     		try {
-    			dialog = ProgressDialog.show(MainActivity.this, "", "Trying to login. Please wait...", true);
+    			showProgressDialog("Trying to login. Please wait...");
     			new Thread(new Runnable(){
     				public void run() {
     					boolean success = false;
@@ -130,10 +129,10 @@ public class MainActivity extends NewsActivity {
     							success = true;
     						}
     						httpclient.getConnectionManager().shutdown();
-    						dialog.dismiss();
+        					hideProgressDialog();
     						dispatchLoginEvent(success);
     					} catch (Exception e) {
-    						dialog.dismiss();
+        					hideProgressDialog();
     						// TODO: Do something intelligent with errors.
     						e.printStackTrace();
     					}
