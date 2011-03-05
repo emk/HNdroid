@@ -77,7 +77,16 @@ class WebViewFragment extends Fragment {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				progressBar.setVisibility(View.GONE);
-			}			
+			}
+
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// Always open links externally.  I thought this was the
+				// default, but apparently not.
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				getActivity().startActivity(intent);
+				return true;
+			}
 		});
 
 		webView.setDownloadListener(new DownloadListener() {
