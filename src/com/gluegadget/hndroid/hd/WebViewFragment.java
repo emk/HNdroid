@@ -23,7 +23,7 @@ import android.widget.ProgressBar;
  * to document it yet, and I haven't been to get it working.  So let's
  * reinvent the wheel, and try to keep it simple.
  */
-class WebViewFragment extends Fragment {
+public class WebViewFragment extends Fragment {
 	ProgressBar progressBar;
 	WebView webView;
 	
