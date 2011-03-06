@@ -103,7 +103,9 @@ public class KarmaWidget extends AppWidgetProvider {
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 		String username = (String) KarmaWidgetConfigurationActivity.loadUsername(context, appWidgetId);
 		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.karma_widget);
-		HackerNewsClient.UserInfo userInfo = HackerNewsClient.getUserInfo(username);
+		
+		HackerNewsClient client = new HackerNewsClient(context);
+		HackerNewsClient.UserInfo userInfo = client.getUserInfo(username);
 		if (userInfo != null) {
 			views.setTextViewText(R.id.username, userInfo.username);
 			views.setTextViewText(R.id.karma, userInfo.karma);

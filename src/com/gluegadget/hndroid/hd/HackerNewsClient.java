@@ -25,6 +25,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
@@ -54,19 +55,17 @@ public class HackerNewsClient {
 	
 	private static final String PREFS_NAME = "user";
 	
-	private Application application;
+	private Context context;
 
-	public HackerNewsClient(Application application) {
-		this.application = application;
+	public HackerNewsClient(Context context) {
+		this.context = context;
 	}
 	
 	private SharedPreferences getSharedPreferences() {
-		return application.getSharedPreferences(PREFS_NAME, 0);
+		return context.getSharedPreferences(PREFS_NAME, 0);
 	}
 
-	// TODO: Set up a HackerNewsClient for our widget, so that we can make
-	// this a regular, non-static method.
-	public static UserInfo getUserInfo(String username) {
+	public UserInfo getUserInfo(String username) {
 		try {
 			URL url = new URL("http://news.ycombinator.com/user?id=" + username);
 			URLConnection connection;
