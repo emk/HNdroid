@@ -4,8 +4,6 @@
 	android:initialLayout="@layout/karma_widget"
 	android:minWidth="72dp"
 	android:minHeight="72dp"
-	android:label="HN Karma"
 	android:updatePeriodMillis="86400000"
-	android:configure="com.gluegadget.hndroid.KarmaWidgetConfigurationActivity"
-	
-/>
+	android:configure="com.gluegadget.hndroid.hd.KarmaWidgetConfigurationActivity"
+	android:label="HN Karma"/>
