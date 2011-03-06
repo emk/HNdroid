@@ -23,7 +23,6 @@ import android.widget.AdapterView.OnItemClickListener;
 
 abstract class NewsActivity extends HNActivity {
 
-	protected static final String PREFS_NAME = "user";
 	private static final int CONTEXT_USER_SUBMISSIONS = 2;
 	private static final int CONTEXT_COMMENTS = 3;
 	private static final int CONTEXT_USER_LINK = 4;
@@ -270,7 +269,7 @@ abstract class NewsActivity extends HNActivity {
 						showProgressDialog("Voting. Please wait...");
 						new Thread(new Runnable(){
 							public void run() {
-								getClient().upvote(newsContexted);
+								getClient().upVote(newsContexted);
 								hideProgressDialog();
 								//handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
 							}
