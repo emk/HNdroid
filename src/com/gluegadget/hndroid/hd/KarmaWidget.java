@@ -1,16 +1,7 @@
 package com.gluegadget.hndroid.hd;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XPatherException;
 
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -111,32 +102,13 @@ public class KarmaWidget extends AppWidgetProvider {
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 		String username = (String) KarmaWidgetConfigurationActivity.loadUsername(context, appWidgetId);
 		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.karma_widget);
-		try {
-			URL url;
-			url = new URL("http://news.ycombinator.com/user?id=" + username);
-			URLConnection connection;
-			connection = url.openConnection();
-
-			InputStream in = connection.getInputStream();
-			HtmlCleaner cleaner = new HtmlCleaner();
-			TagNode node = cleaner.clean(in);
-			Object[] userInfo = node.evaluateXPath("//form[@method='post']/table/tbody/tr/td[2]");
-			if (userInfo.length > 3) {
-				TagNode karmaNode = (TagNode)userInfo[2];
-				views.setTextViewText(R.id.username, username);
-				views.setTextViewText(R.id.karma, karmaNode.getChildren().iterator().next().toString().trim());
-			} else {
-				views.setTextViewText(R.id.username, "unknown");
-				views.setTextViewText(R.id.karma, "0");
-			}
-
-			appWidgetManager.updateAppWidget(appWidgetId, views);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (XPatherException e) {
-			e.printStackTrace();
+		HackerNewsClient.UserInfo userInfo = HackerNewsClient.getUserInfo(username);
+		if (userInfo != null) {
+			views.setTextViewText(R.id.username, userInfo.username);
+			views.setTextViewText(R.id.karma, userInfo.karma);
+		} else {
+			views.setTextViewText(R.id.username, "unknown");
+			views.setTextViewText(R.id.karma, "0");
 		}
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);

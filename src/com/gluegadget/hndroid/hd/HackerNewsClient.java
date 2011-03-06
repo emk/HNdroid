@@ -1,7 +1,10 @@
 package com.gluegadget.hndroid.hd;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +34,17 @@ import android.content.SharedPreferences;
  * without any real re-design.
  */
 public class HackerNewsClient {
-	public class CommentPageInfo {
+	public static class UserInfo {
+		String username;
+		String karma;
+		
+		UserInfo(String username, String karma) {
+			this.username = username;
+			this.karma = karma;
+		}
+	}
+
+	public static class CommentPageInfo {
 		public boolean loggedIn = false;
 		public String fnId = "";
 	}
@@ -51,6 +64,30 @@ public class HackerNewsClient {
 		return application.getSharedPreferences(PREFS_NAME, 0);
 	}
 
+	// TODO: Set up a HackerNewsClient for our widget, so that we can make
+	// this a regular, non-static method.
+	public static UserInfo getUserInfo(String username) {
+		try {
+			URL url = new URL("http://news.ycombinator.com/user?id=" + username);
+			URLConnection connection;
+			connection = url.openConnection();
+
+			InputStream in = connection.getInputStream();
+			HtmlCleaner cleaner = new HtmlCleaner();
+			TagNode node = cleaner.clean(in);
+			Object[] userInfo = node.evaluateXPath("//form[@method='post']/table/tbody/tr/td[2]");
+			if (userInfo.length > 3) {
+				TagNode karmaNode = (TagNode)userInfo[2];
+				String karma = karmaNode.getChildren().iterator().next().toString().trim();
+				return new UserInfo(username, karma);
+			}		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public String downloadAndParseNews(String newsUrl, int pageType, ArrayList<News> news) {
 		String loginUrl = "";
 		try {
