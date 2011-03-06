@@ -48,8 +48,19 @@ public class KarmaWidgetConfigurationActivity extends Activity {
 			
 			String username = mAppWidgetUsername.getText().toString();
 			saveTitlePref(context, mAppWidgetId, username);
-			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-			KarmaWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+
+			// TODO: We can't perform this update from the foreground thread,
+			// because it performs network operations.  So we fork it into
+			// a background thread, and pray that it works.  Ideally, we'd
+			// send a broadcast message to our UpdateService, or some such,
+			// but I haven't figured that out yet.
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+					KarmaWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+				}
+			}).start();
 			
 			Intent resultValue = new Intent();
 			resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
