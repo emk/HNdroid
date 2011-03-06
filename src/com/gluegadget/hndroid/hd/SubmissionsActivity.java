@@ -1,8 +1,5 @@
 package com.gluegadget.hndroid.hd;
 
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XPatherException;
-
 import android.app.ActionBar;
 import android.os.Bundle;
 
@@ -29,12 +26,7 @@ public class SubmissionsActivity extends NewsActivity {
 	}
 
 	@Override
-	protected Object[] findNewsTitles(TagNode node) throws XPatherException {
-		return node.evaluateXPath("//td[@class='title']/a");
+	protected int getPageType() {
+		return HackerNewsClient.SUBMISSIONS_PAGE;
 	}
-
-	@Override
-	protected String findAuthorValue(TagNode author) {
-		return "";
-	}	
 }
