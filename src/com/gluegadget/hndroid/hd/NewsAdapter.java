@@ -3,7 +3,6 @@ package com.gluegadget.hndroid.hd;
 import java.util.List;
 
 import android.content.Context;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +17,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
 	
 	int resource;
 	
-	int defaultBackgroundColor;
-	
 	int checkedPosition = -1;
 	
 	public NewsAdapter(NewsActivity _context, int _resource, List<News> _items) {
@@ -27,7 +24,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
 		mInflater = (LayoutInflater)_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		resource = _resource;
 		context = _context;
-		defaultBackgroundColor = getDefaultBackgroundColor();
 	}
 	
 	public void setCheckedPosition(int _checkedPosition) {
@@ -87,17 +83,9 @@ public class NewsAdapter extends ArrayAdapter<News> {
 	    	int highlight = context.getResources().getColor(R.color.news_item_highlight);
 			convertView.setBackgroundColor(highlight);
 	    } else {
-			convertView.setBackgroundColor(defaultBackgroundColor);
+			convertView.setBackgroundColor(0x00000000);
 	    }
 
 		return convertView;
-	}
-
-	private int getDefaultBackgroundColor() {
-		// http://stackoverflow.com/questions/2826739/how-to-extract-color-values-rgb-from-an-android-theme
-		TypedValue tv = new TypedValue();
-		context.getTheme().resolveAttribute(android.R.attr.colorBackground, tv, true);
-		int backgroundColor = context.getResources().getColor(tv.resourceId);
-		return backgroundColor;
 	}
 }
