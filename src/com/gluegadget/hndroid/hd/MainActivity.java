@@ -1,27 +1,10 @@
 package com.gluegadget.hndroid.hd;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
-
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -94,51 +77,11 @@ public class MainActivity extends NewsActivity {
     	public void ready(final String username, final String password) {
     		try {
     			showProgressDialog("Trying to login. Please wait...");
-    			new Thread(new Runnable(){
+    			new Thread(new Runnable() {
     				public void run() {
-    					boolean success = false;
-    					try {
-    						DefaultHttpClient httpclient = new DefaultHttpClient();
-    						HttpGet httpget = new HttpGet("http://news.ycombinator.com" + loginUrl);
-    						HttpResponse response;
-    						HtmlCleaner cleaner = new HtmlCleaner();
-    						response = httpclient.execute(httpget);
-    						HttpEntity entity = response.getEntity();
-    						TagNode node = cleaner.clean(entity.getContent());
-    						Object[] loginForm = node.evaluateXPath("//form[@method='post']/input");
-    						TagNode loginNode = (TagNode) loginForm[0];
-    						String fnId = loginNode.getAttributeByName("value").toString().trim();    			
-
-    						HttpPost httpost = new HttpPost("http://news.ycombinator.com/y");
-    						List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-    						nvps.add(new BasicNameValuePair("u", username));
-    						nvps.add(new BasicNameValuePair("p", password));
-    						nvps.add(new BasicNameValuePair("fnid", fnId));
-    						httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-    						response = httpclient.execute(httpost);
-    						entity = response.getEntity();
-    						if (entity != null) {
-    							entity.consumeContent();
-    						}
-    						List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-    						if (!cookies.isEmpty()) {
-    							SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-    							SharedPreferences.Editor editor = settings.edit();
-    							editor.putString("cookie", cookies.get(0).getValue());
-    							editor.commit();
-    							success = true;
-    						}
-    						httpclient.getConnectionManager().shutdown();
-        					hideProgressDialog();
-    						dispatchLoginEvent(success);
-    					} catch (Exception e) {
-        					hideProgressDialog();
-    						// TODO: Do something intelligent with errors.
-    						e.printStackTrace();
-    					}
-    				}
-
-					private void dispatchLoginEvent(final boolean success) {
+    					final boolean success =
+    						getClient().logIn(loginUrl, username, password);
+    					hideProgressDialog();
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -148,7 +91,7 @@ public class MainActivity extends NewsActivity {
 									onLoginFailed();
 							}
 						});
-					}
+    				}
     			}).start();
     		} catch (Exception e) {
     			e.printStackTrace();
@@ -178,11 +121,8 @@ public class MainActivity extends NewsActivity {
     	menuItemLogout.setOnMenuItemClickListener(new OnMenuItemClickListener() {
     		public boolean onMenuItemClick(MenuItem item) {
     			try {
-					SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-					SharedPreferences.Editor editor = settings.edit();
-					editor.remove("cookie");
-					editor.commit();
-					refreshNews();
+    				getClient().logOut();
+    				refreshNews();
     			} catch (Exception e) {
     				e.printStackTrace();
     			}

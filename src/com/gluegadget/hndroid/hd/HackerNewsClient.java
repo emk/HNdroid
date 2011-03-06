@@ -3,11 +3,21 @@ package com.gluegadget.hndroid.hd;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -27,11 +37,15 @@ public class HackerNewsClient {
 		this.application = application;
 	}
 	
+	private SharedPreferences getSharedPreferences() {
+		return application.getSharedPreferences(PREFS_NAME, 0);
+	}
+
 	public String downloadAndParseNews(String newsUrl, int pageType, ArrayList<News> news) {
 		String loginUrl = "";
 		try {
 			news.clear();
-			SharedPreferences settings = application.getSharedPreferences(PREFS_NAME, 0);
+			SharedPreferences settings = getSharedPreferences();
 			String cookie = settings.getString("cookie", "");
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpGet httpget = new HttpGet(newsUrl);
@@ -131,5 +145,71 @@ public class HackerNewsClient {
 		default:
 			throw new AssertionError("Unknown pageType");
 		}
+	}
+	
+	public void upvote(News news) {
+		SharedPreferences settings = getSharedPreferences();
+		String cookie = settings.getString("cookie", "");
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet(news.getUpVoteUrl());
+		httpget.addHeader("Cookie", "user=" + cookie);
+		ResponseHandler<String> responseHandler = new BasicResponseHandler();
+		try {
+			httpclient.execute(httpget, responseHandler);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean logIn(String loginUrl, final String username, final String password) {
+		boolean success = false;
+		try {
+			DefaultHttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet("http://news.ycombinator.com" + loginUrl);
+			HttpResponse response;
+			HtmlCleaner cleaner = new HtmlCleaner();
+			response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
+			TagNode node = cleaner.clean(entity.getContent());
+			Object[] loginForm = node.evaluateXPath("//form[@method='post']/input");
+			TagNode loginNode = (TagNode) loginForm[0];
+			String fnId = loginNode.getAttributeByName("value").toString().trim();    			
+
+			HttpPost httpost = new HttpPost("http://news.ycombinator.com/y");
+			List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+			nvps.add(new BasicNameValuePair("u", username));
+			nvps.add(new BasicNameValuePair("p", password));
+			nvps.add(new BasicNameValuePair("fnid", fnId));
+			httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+			response = httpclient.execute(httpost);
+			entity = response.getEntity();
+			if (entity != null) {
+				entity.consumeContent();
+			}
+			List<Cookie> cookies = httpclient.getCookieStore().getCookies();
+			if (!cookies.isEmpty()) {
+				SharedPreferences settings = getSharedPreferences();
+				SharedPreferences.Editor editor = settings.edit();
+				editor.putString("cookie", cookies.get(0).getValue());
+				editor.commit();
+				success = true;
+			}
+			httpclient.getConnectionManager().shutdown();
+		} catch (Exception e) {
+			// TODO: Do something intelligent with errors.
+			e.printStackTrace();
+		}
+		return success;
+	}
+	
+	public void logOut() {
+		SharedPreferences settings = getSharedPreferences();
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove("cookie");
+		editor.commit();
 	}
 }

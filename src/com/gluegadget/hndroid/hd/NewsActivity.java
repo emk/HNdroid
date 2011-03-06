@@ -1,13 +1,6 @@
 package com.gluegadget.hndroid.hd;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -277,21 +270,7 @@ abstract class NewsActivity extends HNActivity {
 						showProgressDialog("Voting. Please wait...");
 						new Thread(new Runnable(){
 							public void run() {
-								SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-								String cookie = settings.getString("cookie", "");
-								DefaultHttpClient httpclient = new DefaultHttpClient();
-								HttpGet httpget = new HttpGet(newsContexted.getUpVoteUrl());
-								httpget.addHeader("Cookie", "user=" + cookie);
-								ResponseHandler<String> responseHandler = new BasicResponseHandler();
-								try {
-									httpclient.execute(httpget, responseHandler);
-								} catch (ClientProtocolException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+								getClient().upvote(newsContexted);
 								hideProgressDialog();
 								//handler.sendEmptyMessage(NOTIFY_DATASET_CHANGED);
 							}
