@@ -3,6 +3,7 @@ package com.gluegadget.hndroid.hd;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -110,6 +111,10 @@ public class KarmaWidget extends AppWidgetProvider {
 			views.setTextViewText(R.id.username, "unknown");
 			views.setTextViewText(R.id.karma, "0");
 		}
+		
+		Intent intent = new Intent(context, MainActivity.class);
+		PendingIntent pending = PendingIntent.getActivity(context, 0, intent, 0);
+		views.setOnClickPendingIntent(R.id.karma_widget, pending);
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
