@@ -64,10 +64,6 @@ public class WebViewFragment extends Fragment {
 		//settings.setDefaultZoom(WebSettings.ZoomDensity.FAR);
 		settings.setUseWideViewPort(true);
 		webView.setInitialScale(0);
-
-		// Disable hardware rendering for the WebView, because it breaks the
-		// fadingedge rendering.
-		webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		
 		webView.setWebChromeClient(new WebChromeClient () {
 			@Override
