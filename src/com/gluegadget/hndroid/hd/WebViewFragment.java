@@ -65,6 +65,10 @@ public class WebViewFragment extends Fragment {
 		settings.setUseWideViewPort(true);
 		webView.setInitialScale(0);
 
+		// Disable hardware rendering for the WebView, because it breaks the
+		// fadingedge rendering.
+		webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		
 		webView.setWebChromeClient(new WebChromeClient () {
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
@@ -122,5 +126,14 @@ public class WebViewFragment extends Fragment {
 				return true;
 			}
 		});
+	}
+
+	@Override
+	public void onDestroyView() {
+		// When hardware acceleration is enabled, we get some weird redraw
+		// flickers when tearing down our WebView. So let's just go ahead and
+		// hide it, which seems to solve the problem.
+		webView.setVisibility(View.INVISIBLE);
+		super.onDestroyView();
 	}
 }
