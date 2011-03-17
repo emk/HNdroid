@@ -13,7 +13,8 @@
 			android:id="@+id/hnListView"
 			android:layout_weight="1"
 			android:layout_width="0dip" 
-			android:layout_height="fill_parent" />
+			android:layout_height="fill_parent"
+			android:cacheColorHint="#00000000" />
 
 		<FrameLayout
 			android:id="@+id/hnDetailsFrame"
