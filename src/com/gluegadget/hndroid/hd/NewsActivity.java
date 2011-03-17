@@ -77,10 +77,7 @@ abstract class NewsActivity extends HNActivity {
 	}
 
 	private void detachDetailsFragmentIfPresent(FragmentTransaction ft) {
-		Fragment fragment = getFragmentManager().findFragmentById(R.id.hnDetailsFrame);
-		if (fragment != null)
-			ft.remove(fragment);
-		ft.add(R.id.hnDetailsFrame, new WelcomeFragment());
+		ft.replace(R.id.hnDetailsFrame, new WelcomeFragment());
 	}
 
 	protected abstract String getDefaultFeedUrl();
