@@ -15,11 +15,6 @@
 			android:configChanges="orientation">
 		</activity>
 		<activity android:name=".SubmissionsActivity" android:label="@string/menu_submissions"></activity>
-		<activity android:name=".KarmaWidgetConfigurationActivity">
-			<intent-filter>
-				<action android:name="android.apwidget.action.APPWIDGET_CONFIGURE"/>
-			</intent-filter>
-		</activity>
 		<activity android:label="HN Preferences" android:name=".PreferencesActivity"/>
 		<receiver android:name=".KarmaWidget" android:label="HN Karma">
 			<intent-filter>

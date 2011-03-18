@@ -65,8 +65,17 @@ public class HackerNewsClient {
 		return context.getSharedPreferences(PREFS_NAME, 0);
 	}
 
-	public UserInfo getUserInfo(String username) {
+	/**
+	 * Return the username and karma of the currently logged-in user, or
+	 * null if we're not logged in.
+	 */
+	public UserInfo getUserInfo() {
 		try {
+			SharedPreferences settings = getSharedPreferences();
+			String username = settings.getString("username", "");
+			if (username == "")
+				return null;
+			
 			URL url = new URL("http://news.ycombinator.com/user?id=" + username);
 			URLConnection connection;
 			connection = url.openConnection();
@@ -240,6 +249,7 @@ public class HackerNewsClient {
 			if (!cookies.isEmpty()) {
 				SharedPreferences settings = getSharedPreferences();
 				SharedPreferences.Editor editor = settings.edit();
+				editor.putString("username", username);
 				editor.putString("cookie", cookies.get(0).getValue());
 				editor.commit();
 				success = true;
@@ -255,6 +265,7 @@ public class HackerNewsClient {
 	public void logOut() {
 		SharedPreferences settings = getSharedPreferences();
 		SharedPreferences.Editor editor = settings.edit();
+		editor.remove("username");
 		editor.remove("cookie");
 		editor.commit();
 	}

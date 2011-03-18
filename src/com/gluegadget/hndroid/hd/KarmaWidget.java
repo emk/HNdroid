@@ -25,15 +25,7 @@ public class KarmaWidget extends AppWidgetProvider {
 		UpdateService.requestUpdate(appWidgetIds);
 		context.startService(new Intent(context, UpdateService.class));
 	}
-	
-	@Override
-	public void onDeleted(Context context, int[] appWidgetIds) {
-		final int N = appWidgetIds.length;
-		for (int i=0; i<N; i++) {
-			KarmaWidgetConfigurationActivity.deleteUsername(context, appWidgetIds[i]);
-		}
-	}
-	
+		
 	public static class UpdateService extends Service implements Runnable {
 		private static Object sLock = new Object();
 		private static Queue<Integer> sAppWidgetIds = new LinkedList<Integer>();
@@ -101,11 +93,10 @@ public class KarmaWidget extends AppWidgetProvider {
 	}
 	
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-		String username = (String) KarmaWidgetConfigurationActivity.loadUsername(context, appWidgetId);
 		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.karma_widget);
 		
 		HackerNewsClient client = new HackerNewsClient(context);
-		HackerNewsClient.UserInfo userInfo = client.getUserInfo(username);
+		HackerNewsClient.UserInfo userInfo = client.getUserInfo();
 		if (userInfo != null) {
 			views.setTextViewText(R.id.username, userInfo.username);
 			views.setTextViewText(R.id.karma, userInfo.karma);

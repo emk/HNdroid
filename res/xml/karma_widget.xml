@@ -5,5 +5,4 @@
 	android:minWidth="72dp"
 	android:minHeight="72dp"
 	android:updatePeriodMillis="14400000"
-	android:configure="com.gluegadget.hndroid.hd.KarmaWidgetConfigurationActivity"
 	android:label="HN Karma"/>
